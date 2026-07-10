@@ -1,0 +1,241 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap");
+
+/* ─── Design Tokens ─── */
+:root {
+  --brand-50: #f0f4ff;
+  --brand-100: #dbe4ff;
+  --brand-400: #748ffc;
+  --brand-500: #5c7cfa;
+  --brand-600: #4c6ef5;
+  --brand-700: #3b5bdb;
+  --brand-900: #1e2a6e;
+  --glow: 0 0 40px rgba(92, 124, 250, 0.25);
+}
+
+/* ─── Base ─── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background: #0a0d14;
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #1a1f2e;
+}
+::-webkit-scrollbar-thumb {
+  background: #4c6ef5;
+  border-radius: 3px;
+}
+
+/* ─── Glass Card ─── */
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+}
+
+.glass-hover {
+  transition: all 0.25s ease;
+}
+.glass-hover:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(92, 124, 250, 0.4);
+  box-shadow: 0 8px 32px rgba(92, 124, 250, 0.15);
+  transform: translateY(-2px);
+}
+
+/* ─── Gradient Text ─── */
+.gradient-text {
+  background: linear-gradient(135deg, #748ffc 0%, #9775fa 50%, #5c7cfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Logo Text ─── */
+.logo-text {
+  font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.logo-text-gradient {
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Brand Button ─── */
+.btn-brand {
+  background: linear-gradient(135deg, #4c6ef5 0%, #7950f2 100%);
+  color: white;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 10px 24px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  position: relative;
+  overflow: hidden;
+}
+.btn-brand::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.08);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.btn-brand:hover::after {
+  opacity: 1;
+}
+.btn-brand:hover {
+  box-shadow: 0 4px 20px rgba(92, 124, 250, 0.45);
+  transform: translateY(-1px);
+}
+.btn-brand:active {
+  transform: translateY(0);
+}
+.btn-brand:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ─── Input Field ─── */
+.input-dark {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #e2e8f0;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  width: 100%;
+  transition: all 0.2s;
+  outline: none;
+}
+.input-dark::placeholder {
+  color: #4a5568;
+}
+.input-dark:focus {
+  border-color: rgba(92, 124, 250, 0.6);
+  box-shadow: 0 0 0 3px rgba(92, 124, 250, 0.15);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* ─── Select Dark ─── */
+select.input-dark option {
+  background: #1a1f2e;
+  color: #e2e8f0;
+}
+
+/* ─── Animated Gradient Background ─── */
+.hero-gradient {
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(92, 124, 250, 0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(121, 80, 242, 0.12) 0%, transparent 60%),
+    #0a0d14;
+}
+
+/* ─── Status Badges ─── */
+.badge-pending {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+.badge-confirmed {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+.badge-needs-review {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+.badge-abandoned {
+  background: rgba(100, 116, 139, 0.15);
+  color: #94a3b8;
+  border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
+/* ─── Glow Pulse Animation ─── */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(92, 124, 250, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(92, 124, 250, 0.6); }
+}
+
+/* ─── Shimmer Loading ─── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ─── Fade In ─── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up {
+  animation: fadeInUp 0.45s ease forwards;
+}
+
+/* ─── Checkbox ─── */
+.checkbox-dark {
+  accent-color: #4c6ef5;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* ─── Tag Toggle ─── */
+.tag-inactive {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tag-active {
+  background: linear-gradient(135deg, rgba(76, 110, 245, 0.3), rgba(121, 80, 242, 0.3));
+  border: 1px solid rgba(92, 124, 250, 0.5);
+  color: #748ffc;
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}

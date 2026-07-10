@@ -1,0 +1,59 @@
+"use client";
+
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { getClientMe, clientLogout } from "@/lib/api";
+
+interface ClientData {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string;
+  company?: string;
+}
+
+interface ClientAuthContextType {
+  client: ClientData | null;
+  isLoading: boolean;
+  refreshClient: () => Promise<void>;
+  logout: () => Promise<void>;
+}
+
+const ClientAuthContext = createContext<ClientAuthContextType>({
+  client: null,
+  isLoading: true,
+  refreshClient: async () => {},
+  logout: async () => {},
+});
+
+export function ClientAuthProvider({ children }: { children: ReactNode }) {
+  const [client, setClient] = useState<ClientData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const refreshClient = async () => {
+    try {
+      const data = await getClientMe();
+      setClient(data);
+    } catch {
+      setClient(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshClient();
+  }, []);
+
+  const logout = async () => {
+    await clientLogout();
+    setClient(null);
+  };
+
+  return (
+    <ClientAuthContext.Provider value={{ client, isLoading, refreshClient, logout }}>
+      {children}
+    </ClientAuthContext.Provider>
+  );
+}
+
+export const useClientAuth = () => useContext(ClientAuthContext);
