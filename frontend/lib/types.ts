@@ -47,6 +47,7 @@ export interface RequestSummary {
   category: Category;
   status: RequestStatus;
   created_at: string;
+  client_id: number;
   client_name: string;
   client_email: string;
   client_company: string | null;

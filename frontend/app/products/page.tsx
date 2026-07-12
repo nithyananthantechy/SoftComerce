@@ -1,28 +1,36 @@
+"use client";
+
 import Link from "next/link";
 import Logo from "@/components/Logo";
 
-const PRODUCTS = [
+const BRANDS = [
   {
-    name: "NITECHSPARK",
-    description: "Our flagship technology consulting and custom software development services. We build scalable, modern applications tailored to your business needs.",
-    features: ["Custom Software", "AI Automation", "Web & Mobile"],
-    url: "#",
-    gradient: "from-blue-500/20 to-cyan-500/10",
-  },
-  {
-    name: "NSK Groups",
-    description: "Enterprise resource planning and business management solutions designed to streamline your operations and boost productivity.",
-    features: ["ERP Solutions", "Business Management", "Data Analytics"],
-    url: "#",
-    gradient: "from-brand-500/20 to-brand-700/10",
-  },
-  {
+    key: "nitehire",
     name: "NiteHire",
-    description: "Intelligent recruitment and applicant tracking system. Find the right talent faster with our AI-driven hiring platform.",
-    features: ["Applicant Tracking", "AI Screening", "Interview Management"],
-    url: "#",
-    gradient: "from-violet-500/20 to-purple-500/10",
+    tagline: "AI-Powered HR & Automated Recruitment",
+    description: "Automate first-round candidate interviews, objective AI scoring, and visual tracking to reduce time-to-hire by up to 60%.",
+    logo: "💼",
+    gradient: "from-blue-500/20 to-indigo-500/10",
+    productCount: 1,
   },
+  {
+    key: "nitechspark",
+    name: "NITECHSPARK Solutions",
+    tagline: "AI CRM, Governance & Compliance Security",
+    description: "Sales outreach platforms (PropoTrack), DPDP Act compliance cybersecurity assessments (NiteSentinel), and AI usage controls (NexusAI).",
+    logo: "⚡",
+    gradient: "from-purple-500/20 to-violet-500/10",
+    productCount: 3,
+  },
+  {
+    key: "nskgroups",
+    name: "NSK Groups Systems",
+    tagline: "Enterprise Safety, Operations & ESG Platforms",
+    description: "Data center energy & emission monitors (SustainHub), personal safety apps (Sentriya), and unified server administration (NiteOps).",
+    logo: "🏢",
+    gradient: "from-teal-500/20 to-emerald-500/10",
+    productCount: 3,
+  }
 ];
 
 export default function ProductsPage() {
@@ -53,52 +61,50 @@ export default function ProductsPage() {
       <main className="mx-auto max-w-6xl px-6 py-20">
         <div className="mb-16 text-center fade-in-up">
           <h2 className="text-4xl font-bold text-white md:text-5xl mb-4">
-            Our <span className="gradient-text">Products & Services</span>
+            Our Brand <span className="gradient-text">Ecosystems</span>
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-slate-400">
-            Explore our ecosystem of enterprise solutions. Request a demo or learn more about how we can accelerate your business.
+            Explore software platforms built across the NiteHire, NITECHSPARK, and NSK Groups ecosystems. Select a brand to review individual products and request live demos.
           </p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-3 fade-in-up" style={{ animationDelay: "0.1s" }}>
-          {PRODUCTS.map((product) => (
-            <div key={product.name} className="glass p-8 rounded-2xl relative overflow-hidden group flex flex-col h-full">
-              <div className={`absolute inset-0 bg-gradient-to-br ${product.gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-100`} />
+          {BRANDS.map((brand) => (
+            <div key={brand.key} className="glass p-8 rounded-3xl relative overflow-hidden group flex flex-col h-full border border-white/5 shadow-xl transition-all duration-300 hover:border-brand-500/20">
+              <div className={`absolute inset-0 bg-gradient-to-br ${brand.gradient} opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-300`} />
               
               <div className="relative z-10 flex flex-col h-full">
-                <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-brand-300 transition-colors">
-                  {product.name}
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-3xl mb-6 group-hover:scale-105 transition-transform">
+                  {brand.logo}
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-1 group-hover:text-brand-400 transition-colors font-display">
+                  {brand.name}
                 </h3>
-                <p className="text-slate-400 leading-relaxed mb-6 flex-grow">
-                  {product.description}
+                <p className="text-brand-400 text-xs font-semibold uppercase tracking-wider mb-4">
+                  {brand.tagline}
+                </p>
+                <p className="text-slate-400 leading-relaxed mb-8 flex-grow text-sm">
+                  {brand.description}
                 </p>
                 
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {product.features.map((feature) => (
-                    <span key={feature} className="px-3 py-1 rounded-full bg-white/5 text-xs text-slate-300 border border-white/10 group-hover:border-brand-500/30">
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex gap-3 mt-auto">
-                  <a href={product.url} className="btn-primary py-2 px-4 rounded-lg text-sm flex-1 text-center">
-                    Request Demo
-                  </a>
-                  <a href={product.url} className="px-4 py-2 rounded-lg text-sm border border-white/10 text-white hover:bg-white/5 transition flex-1 text-center">
-                    Learn More
-                  </a>
+                <div className="mt-auto flex items-center justify-between pt-6 border-t border-white/5">
+                  <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">
+                    {brand.productCount} Product{brand.productCount > 1 ? 's' : ''}
+                  </span>
+                  <Link href={`/products/${brand.key}`} className="btn-brand py-2 px-5 rounded-xl text-xs font-semibold shadow-glow">
+                    Explore Ecosystem
+                  </Link>
                 </div>
               </div>
             </div>
           ))}
         </div>
         
-        <div className="mt-20 glass p-10 rounded-2xl text-center fade-in-up" style={{ animationDelay: "0.2s" }}>
-          <h3 className="text-2xl font-bold text-white mb-3">Looking for custom development?</h3>
-          <p className="text-slate-400 mb-6">Use Softcomerce to generate an instant proposal and budget estimate for your unique project.</p>
-          <Link href="/" className="btn-primary py-3 px-8 rounded-lg inline-block font-medium">
-            Generate AI Proposal
+        <div className="mt-20 glass p-10 rounded-3xl text-center fade-in-up" style={{ animationDelay: "0.2s" }}>
+          <h3 className="text-2xl font-bold text-white mb-3">Looking for custom software?</h3>
+          <p className="text-slate-400 mb-6">Use Softcomerce to submit project specifications, and track pricing and quotes directly.</p>
+          <Link href="/" className="btn-primary py-3 px-8 rounded-xl inline-block font-medium">
+            Submit Custom Request
           </Link>
         </div>
       </main>

@@ -87,7 +87,7 @@ export async function getClientMe(): Promise<any> {
   return api("/api/auth/client/me");
 }
 
-export async function getClientRequests(): Promise<RequestSummary[]> {
+export async function getClientRequests(): Promise<RequestData[]> {
   return api("/api/requests");
 }
 
@@ -153,4 +153,17 @@ export async function markNeedsReview(id: number): Promise<void> {
 
 export function pdfExportUrl(id: number): string {
   return `${API_BASE}/api/admin/requests/${id}/export-pdf`;
+}
+
+export async function requestDemo(payload: {
+  name: string;
+  email: string;
+  contact: string;
+  product_name: string;
+  meeting_time: string;
+}): Promise<any> {
+  return api("/api/demo-request", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
 }

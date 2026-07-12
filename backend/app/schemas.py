@@ -155,3 +155,11 @@ class RateCardOut(BaseModel):
     unit: str | None
 
     model_config = {"from_attributes": True}
+
+
+class DemoRequest(BaseModel):
+    name: str
+    email: EmailStr
+    contact: str
+    product_name: str
+    meeting_time: str

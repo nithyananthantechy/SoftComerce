@@ -5,13 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useClientAuth } from "@/context/ClientAuthContext";
 import { getClientRequests } from "@/lib/api";
-import { CATEGORY_LABELS, type RequestSummary } from "@/lib/types";
+import { CATEGORY_LABELS, type RequestData } from "@/lib/types";
 import Logo from "@/components/Logo";
 
 export default function DashboardPage() {
   const { client, isLoading: isAuthLoading } = useClientAuth();
   const router = useRouter();
-  const [requests, setRequests] = useState<RequestSummary[]>([]);
+  const [requests, setRequests] = useState<RequestData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 

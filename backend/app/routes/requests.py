@@ -9,8 +9,9 @@ from app.schemas import (
     RateCardOut,
     RequestCreate,
     RequestOut,
+    DemoRequest,
 )
-from app.services.email_service import LOCKED_MESSAGE, MAX_VERSIONS, detect_meeting_request, send_confirmation_alert, send_human_review_alert, send_meeting_request_alert
+from app.services.email_service import LOCKED_MESSAGE, MAX_VERSIONS, detect_meeting_request, send_confirmation_alert, send_human_review_alert, send_meeting_request_alert, send_email, _email_wrapper
 from app.services.proposal_engine import generate_proposal
 from app.services.propotrack import push_to_propotrack
 from app.routes.client_auth import verify_client_session
@@ -288,3 +289,55 @@ async def confirm_request(request_id: int, body: ConfirmRequest, fastapi_req: Fa
     await push_to_propotrack(req, latest)
 
     return _request_to_out(req)
+
+
+@router.post("/demo-request")
+async def demo_request(body: DemoRequest, db=Depends(get_db)):
+    subject = f"📅 Live Demo Requested: {body.product_name}"
+    
+    body_html = f"""
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;color:#0f172a;">
+      New Live Demo/Meeting Request!
+    </h2>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+      <tr>
+        <td style="background-color:#f8fafc;border-radius:10px;padding:20px;border:1px solid #e2e8f0;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td width="40%" style="padding:5px 0;color:#475569;font-size:14px;"><strong>Product</strong></td>
+              <td width="60%" style="padding:5px 0;color:#0f172a;font-size:14px;font-weight:bold;">{body.product_name}</td>
+            </tr>
+            <tr>
+              <td style="padding:5px 0;color:#475569;font-size:14px;"><strong>Name</strong></td>
+              <td style="padding:5px 0;color:#475569;font-size:14px;">{body.name}</td>
+            </tr>
+            <tr>
+              <td style="padding:5px 0;color:#475569;font-size:14px;"><strong>Email</strong></td>
+              <td style="padding:5px 0;font-size:14px;"><a href="mailto:{body.email}" style="color:#3b82f6;text-decoration:none;">{body.email}</a></td>
+            </tr>
+            <tr>
+              <td style="padding:5px 0;color:#475569;font-size:14px;"><strong>Contact Phone</strong></td>
+              <td style="padding:5px 0;color:#475569;font-size:14px;">{body.contact}</td>
+            </tr>
+            <tr>
+              <td style="padding:5px 0;color:#475569;font-size:14px;"><strong>Scheduled Time</strong></td>
+              <td style="padding:5px 0;color:#ef4444;font-size:14px;font-weight:bold;">{body.meeting_time}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0;color:#475569;font-size:14px;line-height:1.6;">
+      Please reach out to the client to confirm the scheduled demo/meeting.
+    </p>
+    """
+    
+    html_body = _email_wrapper(
+        header_color="#3b82f6",
+        header_emoji="📅",
+        header_title="Demo Request",
+        body_html=body_html
+    )
+    
+    await send_email(subject, html_body)
+    return {"ok": True}
