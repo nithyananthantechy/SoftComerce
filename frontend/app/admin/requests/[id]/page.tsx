@@ -54,11 +54,12 @@ export default function AdminRequestDetailPage({
     if (!id) return;
     getAdminRequest(id)
       .then(setRequest)
-      .catch((err) => {
-        if (err.message.includes("authenticated")) {
-          router.push("/admin/login");
+      .catch((err: any) => {
+        const msg = err?.message || String(err);
+        if (msg.toLowerCase().includes("authenticated") || msg.includes("401") || msg.toLowerCase().includes("unauthorized")) {
+          window.location.href = "/admin/login";
         } else {
-          setError(err.message);
+          setError(msg);
         }
       })
       .finally(() => setLoading(false));

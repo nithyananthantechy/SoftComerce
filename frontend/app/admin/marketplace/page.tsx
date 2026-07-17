@@ -41,12 +41,13 @@ export default function AdminMarketplacePage() {
       const svcData = await getAdminMarketplaceServices();
       setServices(svcData);
       setError("");
-    } catch (err) {
-      if (err instanceof Error && err.message.includes("authenticated")) {
-        router.push("/admin/login");
+    } catch (err: any) {
+      const msg = err?.message || String(err);
+      if (msg.toLowerCase().includes("authenticated") || msg.includes("401") || msg.toLowerCase().includes("unauthorized")) {
+        window.location.href = "/admin/login";
         return;
       }
-      setError(err instanceof Error ? err.message : "Failed to load data");
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -58,7 +59,7 @@ export default function AdminMarketplacePage() {
 
   async function handleLogout() {
     await adminLogout();
-    router.push("/admin/login");
+    window.location.href = "/admin/login";
   }
 
   async function handlePayment(id: number, status: string) {
