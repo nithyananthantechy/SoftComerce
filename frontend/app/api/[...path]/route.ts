@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-/**
- * Proper API proxy route — forwards ALL headers including Cookie and Set-Cookie.
- * This replaces the next.config.js rewrites() approach which doesn't reliably
- * forward Set-Cookie headers on Vercel (causing the 401 after login bug).
- */
 const BACKEND = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
 async function proxyRequest(request: NextRequest): Promise<NextResponse> {
@@ -12,13 +7,25 @@ async function proxyRequest(request: NextRequest): Promise<NextResponse> {
   const search = request.nextUrl.search;
   const url = `${BACKEND}${pathname}${search}`;
 
-  // Forward ALL request headers from browser to backend (including Cookie)
-  const reqHeaders = new Headers(request.headers);
-  reqHeaders.delete('host');
+  // 1. Manually reconstruct headers to ensure Cookie is forwarded properly
+  const reqHeaders: Record<string, string> = {};
+  request.headers.forEach((value, key) => {
+    if (key.toLowerCase() !== 'host') {
+      reqHeaders[key] = value;
+    }
+  });
+
+  // Explicitly ensure cookies are attached
+  const cookieHeader = request.headers.get('cookie');
+  if (cookieHeader) {
+    reqHeaders['cookie'] = cookieHeader;
+  }
 
   const fetchOptions: RequestInit & { duplex?: string } = {
     method: request.method,
     headers: reqHeaders,
+    // prevent fetch from following redirects so we can pass them to the client
+    redirect: 'manual', 
   };
 
   if (!['GET', 'HEAD'].includes(request.method)) {
@@ -34,8 +41,30 @@ async function proxyRequest(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ detail: 'Backend unreachable' }, { status: 502 });
   }
 
-  // Forward ALL response headers back to browser (including Set-Cookie!)
-  const resHeaders = new Headers(backendRes.headers);
+  // 2. Properly reconstruct response headers, handling Set-Cookie correctly
+  const resHeaders = new Headers();
+  
+  // fetch API merges multiple Set-Cookie headers into one comma-separated string
+  // which is invalid for Set-Cookie. We must manually parse and split them.
+  // Luckily, backendRes.headers.getSetCookie() is available in newer Node/Next.js
+  if (typeof backendRes.headers.getSetCookie === 'function') {
+    const cookies = backendRes.headers.getSetCookie();
+    for (const cookie of cookies) {
+      resHeaders.append('Set-Cookie', cookie);
+    }
+  } else {
+    // Fallback: just copy as-is (might be buggy if multiple cookies are set)
+    const setCookie = backendRes.headers.get('set-cookie');
+    if (setCookie) {
+      resHeaders.set('Set-Cookie', setCookie);
+    }
+  }
+
+  backendRes.headers.forEach((value, key) => {
+    if (key.toLowerCase() !== 'set-cookie') {
+      resHeaders.set(key, value);
+    }
+  });
 
   return new NextResponse(backendRes.body, {
     status: backendRes.status,
