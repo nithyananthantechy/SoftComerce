@@ -101,12 +101,13 @@ export default function AdminDashboardPage() {
       setRequests(data);
       if (!filtered) setAllRequests(all);
       setError("");
-    } catch (err) {
-      if (err instanceof Error && (err.message.toLowerCase().includes("authenticated") || err.message.includes("401") || err.message.toLowerCase().includes("unauthorized"))) {
-        router.push("/admin/login");
+    } catch (err: any) {
+      const msg = err?.message || String(err);
+      if (msg.toLowerCase().includes("authenticated") || msg.includes("401") || msg.toLowerCase().includes("unauthorized")) {
+        window.location.href = "/admin/login";
         return;
       }
-      setError(err instanceof Error ? err.message : "Failed to load");
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -119,7 +120,7 @@ export default function AdminDashboardPage() {
 
   async function handleLogout() {
     await adminLogout();
-    router.push("/admin/login");
+    window.location.href = "/admin/login";
   }
 
   async function handleDeleteClient(clientId: number, clientName: string) {
