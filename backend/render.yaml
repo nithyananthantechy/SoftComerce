@@ -2,6 +2,7 @@ services:
   - type: web
     name: softcomerce-backend
     runtime: python
+    pythonVersion: "3.11.9"
     region: singapore
     plan: free
     buildCommand: pip install -r requirements.txt
