@@ -54,8 +54,21 @@ async function proxyRequest(request: NextRequest): Promise<NextResponse> {
   const url = `${BACKEND}${pathname}${search}`;
 
   const reqHeaders: Record<string, string> = {};
+  
+  // Hop-by-hop and encoding headers that should NOT be forwarded to the backend
+  const requestHeadersToStrip = new Set([
+    'host',
+    'connection',
+    'content-length',
+    'transfer-encoding',
+    'content-encoding',
+    'keep-alive',
+    'accept-encoding', // Let fetch handle compression automatically
+  ]);
+
   request.headers.forEach((value, key) => {
-    if (key.toLowerCase() !== 'host') {
+    const lowerKey = key.toLowerCase();
+    if (!requestHeadersToStrip.has(lowerKey)) {
       reqHeaders[key] = value;
     }
   });
@@ -86,10 +99,20 @@ async function proxyRequest(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ detail: 'Backend unreachable' }, { status: 502 });
   }
 
-  // Copy response headers except set-cookie (which we handle using NextResponse.cookies.set)
+  // Copy response headers, stripping hop-by-hop and compression headers
+  // (because fetch decompresses the body, so forwarding content-encoding/length breaks the browser)
   const resHeaders = new Headers();
+  const responseHeadersToStrip = new Set([
+    'set-cookie',
+    'connection',
+    'transfer-encoding',
+    'content-encoding',
+    'content-length',
+  ]);
+
   backendRes.headers.forEach((value, key) => {
-    if (key.toLowerCase() !== 'set-cookie') {
+    const lowerKey = key.toLowerCase();
+    if (!responseHeadersToStrip.has(lowerKey)) {
       resHeaders.set(key, value);
     }
   });
