@@ -6,10 +6,7 @@ import type {
 } from "./types";
 
 // API calls go through the Next.js server-side proxy (/api/* → Render backend)
-// This avoids cross-origin cookie blocking — cookies are set on the Vercel domain
 const API_BASE = "";
-
-// Direct backend URL only used for non-fetch links (e.g. PDF export)
 const DIRECT_API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
 
 async function api<T>(path: string, options?: RequestInit): Promise<T> {
@@ -23,8 +20,18 @@ async function api<T>(path: string, options?: RequestInit): Promise<T> {
   });
 
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new Error(err.detail || "Request failed");
+    let errDetail = res.statusText;
+    try {
+      const err = await res.json();
+      errDetail = err.detail || errDetail;
+    } catch {
+      // ignore JSON parse error
+    }
+    // Make sure we throw a predictable error for 401s
+    if (res.status === 401) {
+      throw new Error("401 Unauthorized");
+    }
+    throw new Error(errDetail || "Request failed");
   }
 
   return res.json();
@@ -85,7 +92,11 @@ export async function clientLogin(email: string, password: string): Promise<any>
 }
 
 export async function clientLogout(): Promise<void> {
-  await api("/api/auth/client/logout", { method: "POST" });
+  try {
+    await api("/api/auth/client/logout", { method: "POST" });
+  } catch (e) {
+    // ignore logout errors (e.g. already unauthenticated)
+  }
 }
 
 export async function getClientMe(): Promise<any> {
@@ -126,7 +137,11 @@ export async function adminLogin(username: string, password: string): Promise<vo
 }
 
 export async function adminLogout(): Promise<void> {
-  await api("/api/auth/logout", { method: "POST" });
+  try {
+    await api("/api/auth/logout", { method: "POST" });
+  } catch (e) {
+    // ignore logout errors
+  }
 }
 
 export async function getAdminMe(): Promise<{ username: string; role: string }> {

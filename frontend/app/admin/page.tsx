@@ -102,7 +102,7 @@ export default function AdminDashboardPage() {
       if (!filtered) setAllRequests(all);
       setError("");
     } catch (err) {
-      if (err instanceof Error && err.message.includes("authenticated")) {
+      if (err instanceof Error && (err.message.toLowerCase().includes("authenticated") || err.message.includes("401") || err.message.toLowerCase().includes("unauthorized"))) {
         router.push("/admin/login");
         return;
       }
