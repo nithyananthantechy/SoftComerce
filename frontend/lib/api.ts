@@ -5,7 +5,12 @@ import type {
   RequestSummary,
 } from "./types";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+// API calls go through the Next.js server-side proxy (/api/* → Render backend)
+// This avoids cross-origin cookie blocking — cookies are set on the Vercel domain
+const API_BASE = "";
+
+// Direct backend URL only used for non-fetch links (e.g. PDF export)
+const DIRECT_API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
 
 async function api<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -156,7 +161,7 @@ export async function markNeedsReview(id: number): Promise<void> {
 }
 
 export function pdfExportUrl(id: number): string {
-  return `${API_BASE}/api/admin/requests/${id}/export-pdf`;
+  return `${DIRECT_API_BASE}/api/admin/requests/${id}/export-pdf`;
 }
 
 export async function requestDemo(payload: {
