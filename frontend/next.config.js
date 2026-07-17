@@ -1,14 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async rewrites() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-    return [
-      {
-        source: "/api/:path*",
-        destination: `${apiUrl}/api/:path*`,
-      },
-    ];
-  },
+  // API calls are proxied via app/api/[...path]/route.ts which correctly
+  // forwards Set-Cookie and Cookie headers (rewrites() doesn't do this reliably)
 };
 
 module.exports = nextConfig;
