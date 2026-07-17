@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { getClientMe, clientLogout } from "@/lib/api";
 
 interface ClientData {
@@ -33,6 +34,7 @@ const ClientAuthContext = createContext<ClientAuthContextType>({
 export function ClientAuthProvider({ children }: { children: ReactNode }) {
   const [client, setClient] = useState<ClientData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const pathname = usePathname();
 
   const refreshClient = async () => {
     try {
@@ -46,8 +48,12 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    if (pathname?.startsWith("/admin")) {
+      setIsLoading(false);
+      return;
+    }
     refreshClient();
-  }, []);
+  }, [pathname]);
 
   const logout = async () => {
     await clientLogout();
