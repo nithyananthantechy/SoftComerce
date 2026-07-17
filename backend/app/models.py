@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import (
+    Boolean,
     CheckConstraint,
     DateTime,
     ForeignKey,
@@ -25,6 +26,17 @@ class Client(Base):
     password_hash: Mapped[str | None] = mapped_column(Text)
     phone: Mapped[str | None] = mapped_column(Text)
     company: Mapped[str | None] = mapped_column(Text)
+    is_seller: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    bank_details: Mapped[dict | None] = mapped_column(JSONB, server_default="{}")
+    reset_otp: Mapped[str | None] = mapped_column(Text)
+    reset_otp_expires: Mapped[datetime | None] = mapped_column(DateTime)
+    email_change_temp: Mapped[str | None] = mapped_column(Text)
+    email_change_otp: Mapped[str | None] = mapped_column(Text)
+    email_change_otp_expires: Mapped[datetime | None] = mapped_column(DateTime)
+    is_email_verified: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    is_phone_verified: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    register_email_otp: Mapped[str | None] = mapped_column(Text)
+    register_phone_otp: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     requests: Mapped[list["Request"]] = relationship(back_populates="client")
@@ -107,3 +119,64 @@ class Alert(Base):
     email_status: Mapped[str] = mapped_column(Text, server_default="pending")
 
     request: Mapped["Request"] = relationship(back_populates="alerts")
+
+
+class VendorProduct(Base):
+    __tablename__ = "vendor_products"
+    __table_args__ = (
+        CheckConstraint(
+            "payment_status IN ('unpaid', 'paid', 'overdue')", name="ck_vendor_products_payment_status"
+        ),
+        CheckConstraint(
+            "status IN ('pending_approval', 'live', 'rejected')", name="ck_vendor_products_status"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    vendor_id: Mapped[int] = mapped_column(Integer, ForeignKey("clients.id"), nullable=False)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+    tagline: Mapped[str | None] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text)
+    features: Mapped[list | None] = mapped_column(JSONB)
+    currency: Mapped[str] = mapped_column(Text, server_default="USD")
+    price: Mapped[str | None] = mapped_column(Text)
+    pricing_model: Mapped[str] = mapped_column(Text, server_default="per_month")
+    need_server: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    payment_status: Mapped[str] = mapped_column(Text, server_default="unpaid")
+    status: Mapped[str] = mapped_column(Text, server_default="pending_approval")
+    version: Mapped[str | None] = mapped_column(Text, server_default="1.0.0")
+    selected_services: Mapped[dict | None] = mapped_column(JSONB, server_default="{}")
+    demo_video_url: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+    vendor: Mapped["Client"] = relationship()
+
+
+class ServicePricing(Base):
+    __tablename__ = "service_pricings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    service_key: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+    service_name: Mapped[str] = mapped_column(Text, nullable=False)
+    price: Mapped[float] = mapped_column(Numeric, nullable=False, server_default="0")
+    pricing_model: Mapped[str] = mapped_column(Text, server_default="one_time")
+    description: Mapped[str | None] = mapped_column(Text)
+    currency: Mapped[str] = mapped_column(Text, server_default="USD")
+
+
+class MarketplacePurchase(Base):
+    __tablename__ = "marketplace_purchases"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_id: Mapped[int] = mapped_column(Integer, ForeignKey("vendor_products.id"), nullable=False)
+    buyer_id: Mapped[int] = mapped_column(Integer, ForeignKey("clients.id"), nullable=False)
+    buyer_name: Mapped[str] = mapped_column(Text, nullable=False)
+    buyer_email: Mapped[str] = mapped_column(Text, nullable=False)
+    shipping_address: Mapped[str] = mapped_column(Text, nullable=False)
+    amount: Mapped[float] = mapped_column(Numeric, nullable=False)
+    payment_id: Mapped[str | None] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(Text, server_default="completed")
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+    product: Mapped["VendorProduct"] = relationship()
+    buyer: Mapped["Client"] = relationship()

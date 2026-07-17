@@ -23,10 +23,10 @@ const BRANDS = [
     productCount: 3,
   },
   {
-    key: "nskgroups",
-    name: "NSK Groups Systems",
+    key: "nitechspark-enterprise",
+    name: "NITECHSPARK Enterprise",
     tagline: "Enterprise Safety, Operations & ESG Platforms",
-    description: "Data center energy & emission monitors (SustainHub), personal safety apps (Sentriya), and unified server administration (NiteOps).",
+    description: "Data center energy & emission monitors (SustainHub), personal safety apps (Sentriya), and secure communication portals (Spark Connect).",
     logo: "🏢",
     gradient: "from-teal-500/20 to-emerald-500/10",
     productCount: 3,
@@ -43,7 +43,7 @@ export default function ProductsPage() {
             <Logo className="h-8 w-8" />
             <div>
               <h1 className="text-xl logo-text text-white leading-tight mt-1">
-                Soft<span className="logo-text-gradient">comerce</span>
+                Soft<span className="logo-text-gradient">kart</span>
               </h1>
             </div>
           </Link>
@@ -64,7 +64,7 @@ export default function ProductsPage() {
             Our Brand <span className="gradient-text">Ecosystems</span>
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-slate-400">
-            Explore software platforms built across the NiteHire, NITECHSPARK, and NSK Groups ecosystems. Select a brand to review individual products and request live demos.
+            Explore software platforms built across the NiteHire and NITECHSPARK ecosystems. Select a brand to review individual products and request live demos.
           </p>
         </div>
 
@@ -102,7 +102,7 @@ export default function ProductsPage() {
         
         <div className="mt-20 glass p-10 rounded-3xl text-center fade-in-up" style={{ animationDelay: "0.2s" }}>
           <h3 className="text-2xl font-bold text-white mb-3">Looking for custom software?</h3>
-          <p className="text-slate-400 mb-6">Use Softcomerce to submit project specifications, and track pricing and quotes directly.</p>
+          <p className="text-slate-400 mb-6">Use Softkart to submit project specifications, and track pricing and quotes directly.</p>
           <Link href="/" className="btn-primary py-3 px-8 rounded-xl inline-block font-medium">
             Submit Custom Request
           </Link>

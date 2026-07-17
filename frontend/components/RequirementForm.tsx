@@ -122,6 +122,17 @@ export default function RequirementForm({ category }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="rounded-xl border border-brand-500/30 bg-brand-500/10 p-4 mb-6 flex items-start gap-3">
+        <svg className="mt-0.5 h-5 w-5 shrink-0 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p className="text-sm text-brand-100">
+          <strong className="text-white block mb-1">Exclusive Service Notice</strong>
+          Custom software, app, and web development proposals and execution are exclusively handled by 
+          <span className="font-semibold text-brand-400"> NITECHSPARK</span>.
+        </p>
+      </div>
+
       {error && (
         <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
           {error}

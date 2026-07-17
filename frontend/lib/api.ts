@@ -124,6 +124,10 @@ export async function adminLogout(): Promise<void> {
   await api("/api/auth/logout", { method: "POST" });
 }
 
+export async function getAdminMe(): Promise<{ username: string; role: string }> {
+  return api("/api/auth/me");
+}
+
 export async function getAdminRequests(params?: {
   category?: string;
   status?: string;
@@ -165,5 +169,163 @@ export async function requestDemo(payload: {
   return api("/api/demo-request", {
     method: "POST",
     body: JSON.stringify(payload),
+  });
+}
+
+// ── Marketplace API ──
+
+export async function submitVendorProduct(payload: any): Promise<any> {
+  return api("/api/marketplace/vendor/products", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getPublicProducts(): Promise<any[]> {
+  return api("/api/marketplace/products");
+}
+
+export async function getMyProducts(): Promise<any[]> {
+  return api("/api/marketplace/vendor/my-products");
+}
+
+export async function becomeSeller(): Promise<any> {
+  return api("/api/auth/client/become-seller", { method: "POST" });
+}
+
+// ── Admin Marketplace API ──
+
+export async function getAdminMarketplaceProducts(): Promise<any[]> {
+  return api("/api/admin/marketplace/products");
+}
+
+export async function updateMarketplacePayment(id: number, status: string): Promise<any> {
+  return api(`/api/admin/marketplace/products/${id}/payment?status=${status}`, { method: "PUT" });
+}
+
+export async function updateMarketplaceStatus(id: number, status: string): Promise<any> {
+  return api(`/api/admin/marketplace/products/${id}/status?status=${status}`, { method: "PUT" });
+}
+
+export async function notifyMarketplacePayment(id: number): Promise<any> {
+  return api(`/api/admin/marketplace/products/${id}/notify-payment`, { method: "POST" });
+}
+
+export async function updateVendorProduct(id: number, payload: any): Promise<any> {
+  return api(`/api/marketplace/vendor/products/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getMarketplaceServices(): Promise<any[]> {
+  return api("/api/marketplace/services");
+}
+
+export async function getAdminMarketplaceServices(): Promise<any[]> {
+  return api("/api/admin/marketplace/services");
+}
+
+export async function createAdminMarketplaceService(payload: any): Promise<any> {
+  return api("/api/admin/marketplace/services", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateAdminMarketplaceService(id: number, payload: any): Promise<any> {
+  return api(`/api/admin/marketplace/services/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteAdminMarketplaceService(id: number): Promise<any> {
+  return api(`/api/admin/marketplace/services/${id}`, {
+    method: "DELETE",
+  });
+}
+
+// ── Buyer Purchase & Demo API ──
+
+export async function requestMarketplaceDemo(productId: number): Promise<any> {
+  return api(`/api/marketplace/products/${productId}/request-demo`, {
+    method: "POST"
+  });
+}
+
+export async function purchaseMarketplaceProduct(productId: number, payload: any): Promise<any> {
+  return api(`/api/marketplace/products/${productId}/purchase`, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+// ── Seller Earnings & Payouts API ──
+
+export async function getVendorEarnings(): Promise<any> {
+  return api("/api/marketplace/vendor/earnings");
+}
+
+export async function updateVendorBankDetails(payload: any): Promise<any> {
+  return api("/api/marketplace/vendor/bank-details", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function forgotPassword(email: string): Promise<any> {
+  return api("/api/auth/client/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({ email })
+  });
+}
+
+export async function resetPassword(payload: any): Promise<any> {
+  return api("/api/auth/client/reset-password", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function updateProfile(payload: any): Promise<any> {
+  return api("/api/auth/client/profile/update", {
+    method: "PUT",
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function requestPasswordChange(payload: any): Promise<any> {
+  return api("/api/auth/client/profile/request-password-change", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function verifyPasswordChange(payload: any): Promise<any> {
+  return api("/api/auth/client/profile/verify-password-change", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function requestEmailChange(newEmail: string): Promise<any> {
+  return api("/api/auth/client/profile/request-email-change", {
+    method: "POST",
+    body: JSON.stringify({ new_email: newEmail })
+  });
+}
+
+export async function verifyEmailChange(otp: string): Promise<any> {
+  return api("/api/auth/client/profile/verify-email-change", {
+    method: "POST",
+    body: JSON.stringify({ otp })
+  });
+}
+
+export async function verifyRegister(email: string, otp: string): Promise<any> {
+  return api("/api/auth/client/register/verify", {
+    method: "POST",
+    body: JSON.stringify({ email, otp })
   });
 }

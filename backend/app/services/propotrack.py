@@ -14,7 +14,7 @@ async def push_to_propotrack(request, latest_version) -> str:
 
     client = request.client
     payload = {
-        "source": "Softcomerce",
+        "source": "Softkart",
         "client_name": client.name,
         "client_email": client.email,
         "client_phone": client.phone,
@@ -26,7 +26,7 @@ async def push_to_propotrack(request, latest_version) -> str:
         "timeline_estimate": latest_version.timeline_estimate,
         "assumptions": latest_version.assumptions,
         "exclusions": latest_version.exclusions,
-        "softcomerce_request_id": request.id,
+        "softkart_request_id": request.id,
     }
 
     headers = {"Content-Type": "application/json"}

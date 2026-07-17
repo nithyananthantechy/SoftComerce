@@ -1,7 +1,8 @@
+import os
+
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from itsdangerous import BadSignature, URLSafeTimedSerializer
 from passlib.context import CryptContext
-from sqlalchemy.orm import joinedload
 
 from app.config import settings
 from app.database import get_db
@@ -12,6 +13,9 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 serializer = URLSafeTimedSerializer(settings.session_secret)
 SESSION_MAX_AGE = 60 * 60 * 24 * 7  # 7 days
+
+# Use secure cookies in production (HTTPS), plain cookies locally
+IS_PRODUCTION = os.getenv("RENDER", "") != ""
 
 
 def create_session_token() -> str:
@@ -39,17 +43,17 @@ def login(body: AdminLogin, response: Response):
         key="softcomerce_session",
         value=token,
         httponly=True,
-        secure=False,
-        samesite="lax",
-        max_age=SESSION_MAX_AGE,
+        secure=IS_PRODUCTION,          # True on Render (HTTPS), False locally
+        samesite="none" if IS_PRODUCTION else "lax",  # cross-origin cookie on prod
         path="/",
+        max_age=SESSION_MAX_AGE,
     )
     return {"ok": True}
 
 
 @router.post("/logout")
 def logout(response: Response):
-    response.delete_cookie("softcomerce_session")
+    response.delete_cookie("softcomerce_session", path="/")
     return {"ok": True}
 
 

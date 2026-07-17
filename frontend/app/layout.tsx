@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Softcomerce — AI Proposal & Budgeting | NITECHSPARK",
+  title: "Softkart — Your Ultimate Software Solutions Hub | NITECHSPARK",
   description:
-    "Get an instant AI-generated project proposal and budget estimate for web, mobile, and custom software development.",
+    "Explore, demo, and purchase custom web, mobile, and enterprise software solutions.",
 };
 
 import { ClientAuthProvider } from "@/context/ClientAuthContext";

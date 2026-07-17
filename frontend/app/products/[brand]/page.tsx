@@ -117,11 +117,143 @@ const BRAND_DATA: Record<
           summary: "NexusAI provides a central governance layer for organizations deploying multiple LLMs, giving absolute visibility into data flows, token limits, and compliance. It integrates seamlessly with NiteSentinel to secure your organizational AI assets.",
           valueProp: "Stop shadow AI usage and protect proprietary data while empowering your workforce with authorized AI capabilities."
         }
+      },
+      {
+        name: "AD Automation Engine",
+        tagline: "Zero-Touch Active Directory Management",
+        description: "PowerShell-based IT automation suite streamlining Active Directory management by integrating directly with Freshservice ticketing system.",
+        url: "#",
+        gradient: "from-blue-500/20 to-cyan-500/10",
+        features: ["Zero-Touch Helpdesk", "Automated Onboarding", "Secure Offboarding", "Concurrency Protection", "Centralized Logging"],
+        details: {
+          summary: "Continuously fetches support tickets via Freshservice REST API, parses details, and automatically executes AD operations without human intervention. Features global mutex locks to prevent overlapping executions.",
+          valueProp: "Drastically reduce manual IT workload by instantly resolving repetitive, high-volume tickets like password resets and account unlocks the moment they are logged."
+        }
+      },
+      {
+        name: "IT Support Bot",
+        tagline: "Intelligent Helpdesk Bot with n8n-Powered Ticket Routing",
+        description: "AI-powered L1 Support Engineer that auto-learns troubleshooting steps and seamlessly integrates with Slack and Freshservice.",
+        url: "#",
+        gradient: "from-indigo-500/20 to-purple-500/10",
+        features: ["Auto-Learning KB", "L2 Ticket Routing", "Two-Way Thread Sync", "Context-Aware Privacy", "Live Ticket Insights"],
+        details: {
+          summary: "Uses NLP to detect user intent in Slack, providing direct AI answers for simple queries or generating step-by-step troubleshooting. Automatically creates and categorizes tickets in Freshservice.",
+          valueProp: "Deflect routine IT requests with AI while ensuring complex issues are instantly routed to the right L2 group with full context."
+        }
+      },
+      {
+        name: "Travel Desk Automation",
+        tagline: "AI-Powered Travel Request and Approval Workflows",
+        description: "Enterprise Slack bot designed to streamline corporate travel management, enforce policies, and serve as a personal travel assistant.",
+        url: "#",
+        gradient: "from-sky-500/20 to-blue-500/10",
+        features: ["Block Kit Forms", "VIP Bypass Flow", "SLA Monitoring", "Automated Policy Checks", "Smart Reminders", "AI Personal Assistant"],
+        details: {
+          summary: "Eliminates free-typing by using structured Slack workflows for travel booking. Validates requests against corporate policies before submission, and integrates a local LLM (Ollama) to answer travel FAQs.",
+          valueProp: "Streamline travel requests, reduce back-and-forth communication, and guarantee policy compliance while providing employees a seamless booking experience."
+        }
+      },
+      {
+        name: "Lead Generation Engine",
+        tagline: "Automated B2B Lead Capture, Scoring, and CRM Sync",
+        description: "Automated pipeline for lead capture, enrichment, AI scoring, and CRM synchronization via n8n.",
+        url: "#",
+        gradient: "from-emerald-500/20 to-teal-500/10",
+        features: ["LinkedIn & Form Capture", "AI-Powered Scoring", "Clearbit/Apollo Enrichment", "Auto-Sequence Triggers", "HubSpot/Notion Sync"],
+        details: {
+          summary: "Automated B2B lead capture, enrichment, scoring, and CRM sync — so your sales pipeline fills itself while you focus on closing.",
+          valueProp: "Build an automated growth engine that identifies, enriches, and nurtures high-value prospects without manual data entry."
+        }
+      },
+      {
+        name: "Server Monitoring Workflows",
+        tagline: "Prometheus + Grafana Alerting with Auto-Remediation",
+        description: "Connect Prometheus and Grafana alerts directly into n8n automation pipelines so incidents trigger diagnosis, notification, and remediation automatically.",
+        url: "#",
+        gradient: "from-orange-500/20 to-amber-500/10",
+        features: ["Prometheus Alert Triggers", "AI-Powered RCA Summaries", "Slack & PagerDuty Alerts", "Auto-Remediation SSH Scripts", "PostgreSQL Incident Auditing"],
+        details: {
+          summary: "Incidents trigger n8n workflows that generate AI summaries and execute auto-remediation scripts via SSH (e.g., restart service, clear disk) before alerting the team.",
+          valueProp: "Reduce MTTR (Mean Time to Recovery) by automating initial incident diagnosis and remediation for common infrastructure alerts."
+        }
+      },
+      {
+        name: "NiteOps",
+        tagline: "Unified IT Operations Management",
+        description: "All-in-one infrastructure monitoring, network Data Loss Prevention (DLP), and DPDP compliance suite.",
+        url: "https://nskgroups.website",
+        gradient: "from-blue-600/20 to-indigo-600/10",
+        features: ["Real-time Server/App Telemetry", "Network DLP & PII Scans", "DPDP Act Compliance Dashboard", "Zabbix & Grafana Sync", "Python Telemetry Agent", "NexusAI Integration"],
+        details: {
+          summary: "NiteOps serves as a single pane of glass for enterprise infrastructure. In tandem with NexusAI, it uses active Python agents to capture host metrics while simultaneously scanning database and network flows for unauthorized data transfers.",
+          valueProp: "Ditch multiple disjointed tools—monitor servers, secure network data, and maintain DPDP regulatory compliance inside one stack."
+        }
+      },
+      {
+        name: "SparkAudit Compliance Manager",
+        tagline: "End-to-End GRC and Audit Management",
+        description: "Robust compliance and audit management web application designed to streamline evidence collection, manager approvals, and issue tracking.",
+        url: "#",
+        gradient: "from-blue-500/20 to-indigo-500/10",
+        features: ["Role-Based Access Control", "Compliance Tracking", "CAPA Management", "Executive Dashboard", "Immutable Audit Logging"],
+        details: {
+          summary: "Provides a secure, role-based platform for organizations to track compliance against frameworks like ISO or SOC2 through structured checklists, an immutable audit trail, and CAPA tracking.",
+          valueProp: "Streamline compliance tracking with an end-to-end GRC tool tailored for secure, multi-departmental organizations."
+        }
+      },
+      {
+        name: "PDF2Excel AI",
+        tagline: "Industrial OCR Extraction Engine",
+        description: "High-precision OCR extraction engine designed specifically for parsing and generating multi-sheet Excel workbooks from complex industrial documents.",
+        url: "#",
+        gradient: "from-green-500/20 to-emerald-500/10",
+        features: ["AI-Powered OCR Engine", "Large Document Processing", "LME Warrants Parsing", "OBL Data Processing", "Multi-Sheet Excel Export"],
+        details: {
+          summary: "Leverages Google's Gemini AI to automate the extraction of tabular and structured data from dense, highly complex industrial PDFs like LME warrants and OBL sheets.",
+          valueProp: "Eliminate manual data entry by converting complex industrial documents into actionable Excel formats with ultra-high precision."
+        }
+      },
+      {
+        name: "CyberScan",
+        tagline: "High-Performance Port Scanner & Network Recon",
+        description: "Professional-grade asynchronous port scanner and network reconnaissance tool featuring a modern web dashboard and AI threat scoring.",
+        url: "#",
+        gradient: "from-purple-500/20 to-pink-500/10",
+        features: ["Asynchronous Scanning", "Service & Banner Detection", "AI Risk Threat Score", "Sonic Recon™ TTS", "Live Metrics Dashboard"],
+        details: {
+          summary: "Built on a Python asynchronous engine, CyberScan offers rapid network analysis, automated visual risk assessment, and real-time auditory feedback for security professionals.",
+          valueProp: "Quickly map network perimeters, identify exposed services, and prioritize mitigation efforts with an intuitive, high-performance scanning tool."
+        }
+      },
+      {
+        name: "RCA Engine",
+        tagline: "AI-Powered Root Cause Analysis & Auto-Remediation",
+        description: "Intelligent incident response platform that gathers forensic data, uses AI to deduce root causes, and orchestrates auto-remediation.",
+        url: "#",
+        gradient: "from-red-500/20 to-orange-500/10",
+        features: ["Automated Alert Ingestion", "SSH Forensic Gathering", "AI Root Cause Analysis", "n8n Workflow Orchestration", "Auto-Remediation System"],
+        details: {
+          summary: "Acts as a bridge between monitoring systems (Zabbix, Prometheus), diagnostic log collection, AI-driven analysis, and workflow automation. Uses Anthropic's Claude AI for deep log analysis.",
+          valueProp: "Reduce MTTA and MTTR through zero-touch incident triage and self-healing infrastructure automation."
+        }
+      },
+      {
+        name: "SecurityCheck Pro",
+        tagline: "IT Security Weekly Checklist Automation",
+        description: "Comprehensive web application for IT Security professionals to manage, track, and automate routine weekly security tasks.",
+        url: "#",
+        gradient: "from-yellow-500/20 to-amber-500/10",
+        features: ["Weekly Task Tracking", "Automation Monitoring", "Real-Time Stats Dashboard", "CSV/PDF Reporting", "Quick Actions & Filters"],
+        details: {
+          summary: "Provides a centralized platform to manage recurring security tasks, monitor automated workflows (e.g., backups, firewall syncs), and generate compliance reports.",
+          valueProp: "Ensure enterprise protection and compliance by systematically tracking and automating routine security maintenance activities."
+        }
       }
     ]
   },
-  nskgroups: {
-    title: "NSK Groups Solutions",
+  "nitechspark-enterprise": {
+    title: "NITECHSPARK Enterprise Solutions",
     description: "Enterprise ESG databases, unified IT monitoring stacks, and AI personal safety ecosystems.",
     logo: "🏢",
     products: [
@@ -150,15 +282,27 @@ const BRAND_DATA: Record<
         }
       },
       {
-        name: "NiteOps",
-        tagline: "Unified IT Operations Management",
-        description: "All-in-one infrastructure monitoring, network Data Loss Prevention (DLP), and DPDP compliance suite.",
-        url: "https://nskgroups.website",
-        gradient: "from-blue-600/20 to-indigo-600/10",
-        features: ["Real-time Server/App Telemetry", "Network DLP & PII Scans", "DPDP Act Compliance Dashboard", "Zabbix & Grafana Sync", "Python Telemetry Agent", "NexusAI Integration"],
+        name: "Alone AI (NiteBuddy)",
+        tagline: "Emotionally Intelligent AI Companion",
+        description: "A personal confidant and virtual buddy that helps users manage their emotional well-being, set personal goals, and maintain a journal.",
+        url: "#",
+        gradient: "from-indigo-500/20 to-purple-500/10",
+        features: ["Advanced Chat with Vector Memory", "Emotion Tracking", "Goal Management", "Personal Journaling", "Local LLM Support"],
         details: {
-          summary: "NiteOps serves as a single pane of glass for enterprise infrastructure. In tandem with NexusAI, it uses active Python agents to capture host metrics while simultaneously scanning database and network flows for unauthorized data transfers.",
-          valueProp: "Ditch multiple disjointed tools—monitor servers, secure network data, and maintain DPDP regulatory compliance inside one stack."
+          summary: "Leverages long-term AI memory (Qdrant) to create a personalized, evolving relationship. Supports tracking emotional state, setting goals, and reflective journaling.",
+          valueProp: "A safe, private space for emotional support and mental health tracking with a context-aware AI companion."
+        }
+      },
+      {
+        name: "Spark Connect",
+        tagline: "Enterprise-Grade Secure Communication Portal",
+        description: "Secure Android communication and collaboration app featuring strict role-based access controls, security clearances, and integrated AI.",
+        url: "#",
+        gradient: "from-cyan-500/20 to-blue-500/10",
+        features: ["Enterprise Authentication", "Security Holding Area", "Role-Based Channel Access", "Gemini AI Assistant", "Jetpack Compose UI"],
+        details: {
+          summary: "Simulates an advanced corporate portal for sensitive communications. External registrations require explicit admin approval, and channels are strictly visibility-gated based on roles.",
+          valueProp: "Provide a highly secure, restricted workspace for C-Suite executives, incident responders, and approved partners with built-in AI assistance."
         }
       }
     ]
@@ -195,7 +339,7 @@ export default function BrandProductsPage({
             <Logo className="h-8 w-8" />
             <div>
               <h1 className="text-xl logo-text text-white leading-tight mt-1">
-                Soft<span className="logo-text-gradient">comerce</span>
+                Soft<span className="logo-text-gradient">kart</span>
               </h1>
             </div>
           </Link>

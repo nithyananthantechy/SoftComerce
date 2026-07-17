@@ -67,7 +67,7 @@ export default function SubmitPage({
               </div>
               <div>
                 <p className="text-[12px] font-bold logo-text text-white leading-none mt-1">
-                  Soft<span className="logo-text-gradient">comerce</span>
+                  Soft<span className="logo-text-gradient">kart</span>
                 </p>
                 <p className="text-sm font-semibold text-white leading-tight">
                   {CATEGORY_LABELS[cat]}

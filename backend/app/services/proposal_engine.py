@@ -7,7 +7,7 @@ from app.models import ProposalVersion, RateCard
 
 logger = logging.getLogger(__name__)
 
-SYSTEM_PROMPT = """You are Softcomerce's proposal engine for NITECHSPARK. Given a client's structured
+SYSTEM_PROMPT = """You are Softkart's proposal engine for NITECHSPARK. Given a client's structured
 requirements and the rate card below, generate a proposal.
 
 Rules:

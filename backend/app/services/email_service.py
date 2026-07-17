@@ -58,10 +58,10 @@ def _email_wrapper(header_color: str, header_emoji: str, header_title: str, body
               <table cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td style="background-color:#3b82f6;border-radius:6px;padding:4px 10px;margin-right:10px;">
-                    <span style="color:#ffffff;font-size:11px;font-weight:bold;letter-spacing:1px;">SC</span>
+                    <span style="color:#ffffff;font-size:11px;font-weight:bold;letter-spacing:1px;">SK</span>
                   </td>
                   <td style="padding-left:10px;">
-                    <span style="color:#94a3b8;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;">NITECHSPARK &middot; Softcomerce</span>
+                    <span style="color:#94a3b8;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;">NITECHSPARK &middot; Softkart</span>
                   </td>
                 </tr>
               </table>
@@ -88,7 +88,7 @@ def _email_wrapper(header_color: str, header_emoji: str, header_title: str, body
             <td style="background-color:#f8fafc;border-top:1px solid #e2e8f0;padding:20px 32px;text-align:center;">
               {footer_html}
               <p style="margin:8px 0 0;color:#94a3b8;font-size:11px;">
-                &copy; {2026} Softcomerce &mdash; AI Proposal Engine by NITECHSPARK
+                &copy; {2026} Softkart &mdash; Software Hub by NITECHSPARK
               </p>
             </td>
           </tr>
@@ -286,6 +286,58 @@ async def _send_sendgrid(subject: str, html_body: str) -> str:
             },
             json={
                 "personalizations": [{"to": [{"email": settings.admin_email}]}],
+                "from": {"email": settings.from_email},
+                "subject": subject,
+                "content": [{"type": "text/html", "value": html_body}],
+            },
+        )
+        resp.raise_for_status()
+    return "sent"
+
+
+async def send_email_to_user(to_email: str, subject: str, html_body: str) -> str:
+    if settings.smtp_host and settings.smtp_user:
+        return await _send_smtp_to_user(to_email, subject, html_body)
+    if settings.sendgrid_api_key:
+        return await _send_sendgrid_to_user(to_email, subject, html_body)
+    logger.warning("No email provider configured — email not sent to %s: %s", to_email, subject)
+    return "skipped_no_config"
+
+
+async def _send_smtp_to_user(to_email: str, subject: str, html_body: str) -> str:
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = settings.from_email
+    msg["To"] = to_email
+
+    plain = (
+        subject + "\n\n"
+        "This email contains HTML formatting. Please view it in an HTML-capable email client."
+    )
+    msg.attach(MIMEText(plain, "plain", "utf-8"))
+    msg.attach(MIMEText(html_body, "html", "utf-8"))
+
+    await aiosmtplib.send(
+        msg,
+        hostname=settings.smtp_host,
+        port=settings.smtp_port,
+        username=settings.smtp_user,
+        password=settings.smtp_password,
+        start_tls=True,
+    )
+    return "sent"
+
+
+async def _send_sendgrid_to_user(to_email: str, subject: str, html_body: str) -> str:
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(
+            "https://api.sendgrid.com/v3/mail/send",
+            headers={
+                "Authorization": f"Bearer {settings.sendgrid_api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "personalizations": [{"to": [{"email": to_email}]}],
                 "from": {"email": settings.from_email},
                 "subject": subject,
                 "content": [{"type": "text/html", "value": html_body}],
@@ -547,3 +599,28 @@ async def send_meeting_request_alert(db, request, feedback_text: str) -> str:
     db.add(alert)
     db.commit()
     return status
+
+
+async def send_otp_email(to_email: str, otp: str, purpose: str) -> str:
+    subject = f"🔐 Verification Code: {otp}"
+    body_html = f"""
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;color:#0f172a;">
+      Your Verification Code
+    </h2>
+    <p style="margin:0 0 20px;color:#475569;font-size:14px;line-height:1.6;">
+      You requested a code to <strong>{purpose}</strong>.
+    </p>
+    <div style="background-color:#f1f5f9;border-radius:10px;padding:24px;text-align:center;margin-bottom:20px;border:1px solid #e2e8f0;">
+      <span style="font-size:36px;font-weight:bold;color:#0f172a;letter-spacing:6px;font-family:monospace;">{otp}</span>
+    </div>
+    <p style="margin:0;color:#94a3b8;font-size:12px;line-height:1.5;">
+      This code is valid for 15 minutes. If you did not request this verification, you can safely ignore this email.
+    </p>
+    """
+    html_body = _email_wrapper(
+        header_color="#3b82f6",
+        header_emoji="🔐",
+        header_title="Verification Code",
+        body_html=body_html
+    )
+    return await send_email_to_user(to_email, subject, html_body)

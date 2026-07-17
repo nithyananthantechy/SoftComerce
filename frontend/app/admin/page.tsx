@@ -166,6 +166,10 @@ export default function AdminDashboardPage() {
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-xs font-medium text-emerald-400">Live</span>
             </div>
+            <Link href="/admin/marketplace" className="text-sm font-medium text-orange-400 transition hover:text-orange-300">
+              Marketplace
+            </Link>
+            <div className="h-4 w-px bg-white/10" />
             <Link href="/" className="text-sm font-medium text-slate-400 transition hover:text-brand-400">
               Public site
             </Link>

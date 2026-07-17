@@ -9,6 +9,11 @@ interface ClientData {
   email: string;
   phone?: string;
   company?: string;
+  is_seller?: boolean;
+  created_at?: string;
+  is_admin?: boolean;
+  is_email_verified?: boolean;
+  is_phone_verified?: boolean;
 }
 
 interface ClientAuthContextType {

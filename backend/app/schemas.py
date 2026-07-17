@@ -52,8 +52,8 @@ class ClientCreate(BaseModel):
     name: str
     email: EmailStr
     password: str | None = None
-    phone: str | None = None
-    company: str | None = None
+    phone: str
+    company: str
 
 
 class ClientLogin(BaseModel):
@@ -97,6 +97,10 @@ class ClientOut(BaseModel):
     email: str
     phone: str | None
     company: str | None
+    is_seller: bool = False
+    is_email_verified: bool = False
+    is_phone_verified: bool = False
+    created_at: datetime | None = None
 
     model_config = {"from_attributes": True}
 
@@ -163,3 +167,135 @@ class DemoRequest(BaseModel):
     contact: str
     product_name: str
     meeting_time: str
+
+
+class VendorProductCreate(BaseModel):
+    name: str
+    tagline: str | None = None
+    description: str | None = None
+    features: list[str] = Field(default_factory=list)
+    currency: str = "USD"
+    price: str | None = None
+    pricing_model: str = "per_month"
+    need_server: bool = False
+    version: str | None = "1.0.0"
+    selected_services: dict | None = None
+    demo_video_url: str | None = None
+
+
+class VendorProductOut(BaseModel):
+    id: int
+    vendor_id: int
+    name: str
+    tagline: str | None
+    description: str | None
+    features: list[str] | None
+    currency: str
+    price: str | None
+    pricing_model: str
+    need_server: bool
+    payment_status: str
+    status: str
+    version: str | None
+    selected_services: dict | None
+    demo_video_url: str | None
+    created_at: datetime
+    
+    vendor: ClientOut | None = None
+
+    model_config = {"from_attributes": True}
+
+
+class ServicePricingCreate(BaseModel):
+    service_key: str
+    service_name: str
+    price: float
+    pricing_model: str = "one_time"
+    description: str | None = None
+    currency: str = "USD"
+
+
+class ServicePricingOut(BaseModel):
+    id: int
+    service_key: str
+    service_name: str
+    price: float
+    pricing_model: str
+    description: str | None
+    currency: str
+
+    model_config = {"from_attributes": True}
+
+
+class MarketplacePurchaseCreate(BaseModel):
+    buyer_name: str
+    buyer_email: str
+    shipping_address: str
+    amount: float
+    payment_id: str | None = None
+
+
+class MarketplacePurchaseOut(BaseModel):
+    id: int
+    product_id: int
+    buyer_id: int
+    buyer_name: str
+    buyer_email: str
+    shipping_address: str
+    amount: float
+    payment_id: str | None
+    status: str
+    created_at: datetime
+    
+    product: VendorProductOut | None = None
+
+    model_config = {"from_attributes": True}
+
+
+class BankDetailsUpdate(BaseModel):
+    bank_name: str
+    account_number: str
+    ifsc_code: str
+    holder_name: str
+    upi_id: str | None = None
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+
+class ResetPasswordVerify(BaseModel):
+    email: str
+    otp: str
+    new_password: str
+
+
+class ProfileUpdate(BaseModel):
+    name: str
+    company: str | None = None
+    phone: str | None = None
+
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str
+
+
+class EmailChangeRequest(BaseModel):
+    new_email: str
+
+
+class EmailChangeVerify(BaseModel):
+    otp: str
+
+
+class VerifyPasswordChange(BaseModel):
+    current_password: str
+    new_password: str
+    otp: str
+
+
+class RegisterVerify(BaseModel):
+    email: str
+    otp: str
+

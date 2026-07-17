@@ -5,9 +5,9 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import joinedload
 
 from app.database import get_db
-from app.models import Client, ProposalVersion, Request
+from app.models import Client, ProposalVersion, Request, VendorProduct, ServicePricing
 from app.routes.auth import verify_session
-from app.schemas import RequestOut, RequestSummary
+from app.schemas import RequestOut, RequestSummary, VendorProductOut, ServicePricingCreate, ServicePricingOut
 from app.services.email_service import LOCKED_MESSAGE, MAX_VERSIONS, send_confirmation_alert, send_human_review_alert
 from app.services.propotrack import push_to_propotrack
 
@@ -157,3 +157,109 @@ def export_pdf(request_id: int, db=Depends(get_db)):
         media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
+
+
+# -- Admin Marketplace Routes --
+
+@router.get("/marketplace/products", response_model=list[VendorProductOut])
+def admin_get_marketplace_products(db=Depends(get_db)):
+    products = db.query(VendorProduct).options(joinedload(VendorProduct.vendor)).order_by(VendorProduct.created_at.desc()).all()
+    return products
+
+
+@router.put("/marketplace/products/{product_id}/payment", response_model=VendorProductOut)
+def admin_update_payment(product_id: int, status: str, db=Depends(get_db)):
+    if status not in ["unpaid", "paid", "overdue"]:
+        raise HTTPException(status_code=400, detail="Invalid payment status")
+    
+    product = db.query(VendorProduct).filter(VendorProduct.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+        
+    product.payment_status = status
+    db.commit()
+    db.refresh(product)
+    return product
+
+
+@router.put("/marketplace/products/{product_id}/status", response_model=VendorProductOut)
+def admin_update_status(product_id: int, status: str, db=Depends(get_db)):
+    if status not in ["pending_approval", "live", "rejected"]:
+        raise HTTPException(status_code=400, detail="Invalid status")
+        
+    product = db.query(VendorProduct).filter(VendorProduct.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+        
+    product.status = status
+    db.commit()
+    db.refresh(product)
+    return product
+
+
+@router.post("/marketplace/products/{product_id}/notify-payment")
+def admin_notify_payment(product_id: int, db=Depends(get_db)):
+    product = db.query(VendorProduct).options(joinedload(VendorProduct.vendor)).filter(VendorProduct.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+        
+    # In a real app, send an email to product.vendor.email
+    print(f"Sent payment reminder email to {product.vendor.email} for product {product.name}")
+    
+    return {"ok": True, "message": "Payment reminder sent"}
+
+
+# -- Admin Service Pricing Routes --
+
+@router.get("/marketplace/services", response_model=list[ServicePricingOut])
+def admin_get_services(db=Depends(get_db)):
+    return db.query(ServicePricing).order_by(ServicePricing.id.asc()).all()
+
+
+@router.post("/marketplace/services", response_model=ServicePricingOut)
+def admin_create_service(body: ServicePricingCreate, db=Depends(get_db)):
+    existing = db.query(ServicePricing).filter(ServicePricing.service_key == body.service_key).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Service key already exists")
+    
+    service = ServicePricing(
+        service_key=body.service_key,
+        service_name=body.service_name,
+        price=body.price,
+        pricing_model=body.pricing_model,
+        description=body.description,
+        currency=body.currency
+    )
+    db.add(service)
+    db.commit()
+    db.refresh(service)
+    return service
+
+
+@router.put("/marketplace/services/{service_id}", response_model=ServicePricingOut)
+def admin_update_service(service_id: int, body: ServicePricingCreate, db=Depends(get_db)):
+    service = db.query(ServicePricing).filter(ServicePricing.id == service_id).first()
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    service.service_key = body.service_key
+    service.service_name = body.service_name
+    service.price = body.price
+    service.pricing_model = body.pricing_model
+    service.description = body.description
+    service.currency = body.currency
+    
+    db.commit()
+    db.refresh(service)
+    return service
+
+
+@router.delete("/marketplace/services/{service_id}")
+def admin_delete_service(service_id: int, db=Depends(get_db)):
+    service = db.query(ServicePricing).filter(ServicePricing.id == service_id).first()
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    db.delete(service)
+    db.commit()
+    return {"ok": True, "message": "Service deleted"}
