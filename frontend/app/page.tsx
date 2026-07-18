@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { CATEGORY_LABELS, type Category } from "@/lib/types";
 import { useClientAuth } from "@/context/ClientAuthContext";
@@ -37,16 +37,21 @@ const categories: {
   },
 ];
 
-const MOCK_MARKETPLACE_PREVIEW = [
-  { id: "mkt-1", name: "FlowAnalytics Pro", vendor: "DataFlow Systems", price: "$49/mo" },
-  { id: "mkt-2", name: "DesignUI Toolkit", vendor: "CreativeApps Inc", price: "$199 one-time" },
-  { id: "mkt-3", name: "AuthGuard Enterprise", vendor: "SecureNet Ltd", price: "$99/mo" }
-];
 
 export default function HomePage() {
   const { client, logout } = useClientAuth();
   const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [previewProducts, setPreviewProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/marketplace/products")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setPreviewProducts(data.slice(0, 3));
+      })
+      .catch(() => {});
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -247,15 +252,25 @@ export default function HomePage() {
              </div>
 
              <div className="relative z-10 grid gap-4 md:grid-cols-3">
-               {MOCK_MARKETPLACE_PREVIEW.map((prod) => (
-                  <div key={prod.id} className="bg-dark-900/50 border border-white/5 rounded-2xl p-5 hover:border-orange-500/30 transition">
-                     <h4 className="text-white font-bold mb-1">{prod.name}</h4>
-                     <p className="text-xs text-slate-500 mb-3">By {prod.vendor}</p>
-                     <div className="flex justify-between items-center mt-4 pt-4 border-t border-white/5">
-                        <span className="text-sm font-semibold text-orange-400">{prod.price}</span>
-                     </div>
-                  </div>
-               ))}
+               {previewProducts.length > 0 ? previewProducts.map((prod) => {
+                 const sym = prod.currency === "INR" ? "₹" : "$";
+                 const model = prod.pricing_model === "per_month" ? "/mo" :
+                               prod.pricing_model === "per_year" ? "/yr" :
+                               prod.pricing_model === "one_time" ? " one-time" : "";
+                 return (
+                   <div key={prod.id} className="bg-dark-900/50 border border-white/5 rounded-2xl p-5 hover:border-orange-500/30 transition">
+                      <h4 className="text-white font-bold mb-1">{prod.name}</h4>
+                      <p className="text-xs text-slate-500 mb-3">By {prod.vendor?.name || "Independent Seller"}</p>
+                      <div className="flex justify-between items-center mt-4 pt-4 border-t border-white/5">
+                         <span className="text-sm font-semibold text-orange-400">{sym}{prod.price}{model}</span>
+                      </div>
+                   </div>
+                 );
+               }) : (
+                 <div className="col-span-3 text-center py-8 text-slate-500 text-sm">
+                   Products coming soon — <Link href="/marketplace" className="text-brand-400 hover:underline">check the marketplace</Link>.
+                 </div>
+               )}
              </div>
           </div>
         </section>
