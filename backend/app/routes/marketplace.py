@@ -12,6 +12,7 @@ from app.schemas import (
     BankDetailsUpdate,
 )
 from app.routes.client_auth import verify_client_session
+from app.services.email_service import send_demo_request_alert
 
 router = APIRouter(prefix="/api/marketplace", tags=["marketplace"])
 
@@ -120,7 +121,7 @@ def get_my_products(
 
 
 @router.post("/products/{product_id}/request-demo")
-def request_product_demo(
+async def request_product_demo(
     product_id: int,
     session: dict = Depends(verify_client_session),
     db: Session = Depends(get_db)
@@ -136,12 +137,8 @@ def request_product_demo(
     if not seller:
         raise HTTPException(status_code=404, detail="Seller not found")
     
-    print("==================================================")
-    print(f"DEMO REQUEST ALERTS FOR {product.name} v{product.version}")
-    print(f"TO SELLER: {seller.name} ({seller.email})")
-    print(f"FROM BUYER: {buyer.name} ({buyer.email})")
-    print(f"MESSAGE: This buyer needs a demo of your tool {product.name}.")
-    print("==================================================")
+    # Send actual email to seller
+    await send_demo_request_alert(product, seller, buyer)
     
     return {"ok": True, "message": "Demo request sent to seller"}
 

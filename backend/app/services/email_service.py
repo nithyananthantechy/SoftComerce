@@ -647,3 +647,81 @@ async def send_otp_email(to_email: str, otp: str, purpose: str) -> str:
         body_html=body_html
     )
     return await send_email_to_user(to_email, subject, html_body)
+
+
+async def send_demo_request_alert(product, seller, buyer) -> str:
+    """Sends an email to the seller indicating that a client wants a demo of their product."""
+    subject = f"🔔 Demo Request: {buyer.name} wants a demo of {product.name}"
+    
+    body_html = f"""
+    <h2 style="margin:0 0 12px;font-size:20px;font-weight:700;color:#0f172a;">
+      New Demo Request &#128222;
+    </h2>
+    <p style="margin:0 0 20px;color:#475569;font-size:14px;line-height:1.6;">
+      Great news! <strong style="color:#0f172a;">{buyer.name}</strong> from 
+      <strong style="color:#0f172a;">{buyer.company or "N/A"}</strong> 
+      is interested in your product <strong>{product.name} (v{product.version})</strong> and has requested a live demo or discussion.
+    </p>
+
+    <!-- Buyer Details -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+      <tr>
+        <td style="background-color:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;border-left:4px solid #0ea5e9;padding:16px 20px;">
+          <p style="margin:0 0 6px;color:#0c4a6e;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">&#128100; Client Details</p>
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td style="color:#475569;font-size:13px;padding:4px 0;" width="30%"><strong>Name:</strong></td>
+              <td style="color:#0369a1;font-size:14px;font-weight:600;padding:4px 0;">{buyer.name}</td>
+            </tr>
+            <tr>
+              <td style="color:#475569;font-size:13px;padding:4px 0;"><strong>Email:</strong></td>
+              <td style="color:#0369a1;font-size:14px;font-weight:600;padding:4px 0;">
+                <a href="mailto:{buyer.email}" style="color:#0ea5e9;text-decoration:none;">{buyer.email}</a>
+              </td>
+            </tr>
+            <tr>
+              <td style="color:#475569;font-size:13px;padding:4px 0;"><strong>Phone:</strong></td>
+              <td style="color:#0369a1;font-size:14px;font-weight:600;padding:4px 0;">{buyer.phone or "N/A"}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p style="margin:0 0 20px;color:#475569;font-size:14px;line-height:1.6;">
+      Please reach out to them as soon as possible to schedule the demo and answer any questions they might have.
+    </p>
+
+    <!-- Quick action buttons -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+      <tr>
+        <td style="padding-right:8px;" width="50%">
+          <a href="mailto:{buyer.email}?subject=Demo%20Request%20for%20{product.name}&body=Hi%20{buyer.name}%2C%0A%0AThank%20you%20for%20your%20interest%20in%20{product.name}.%20I%27d%20love%20to%20connect%20and%20give%20you%20a%20live%20demo.%0A%0AWhat%20time%20works%20best%20for%20you%3F%0A%0ABest%2C%0A{seller.name}"
+             style="display:block;text-align:center;background-color:#3b82f6;color:#ffffff;font-size:13px;font-weight:700;text-decoration:none;padding:12px 16px;border-radius:8px;">
+            &#10003; Reply via Email
+          </a>
+        </td>
+        <td style="padding-left:8px;" width="50%">
+          <a href="tel:{buyer.phone or ''}"
+             style="display:block;text-align:center;background-color:#7c3aed;color:#ffffff;font-size:13px;font-weight:700;text-decoration:none;padding:12px 16px;border-radius:8px;">
+            &#128222; Call Client
+          </a>
+        </td>
+      </tr>
+    </table>
+    """
+    
+    footer_html = f"""
+    <p style="margin:0 0 6px;color:#64748b;font-size:12px;">
+      &#128222; Demo requested &mdash; {product.name}
+    </p>"""
+
+    html_body = _email_wrapper(
+        header_color="#10b981", # Emerald green
+        header_emoji="🚀",
+        header_title="Demo Request Received",
+        body_html=body_html,
+        footer_html=footer_html,
+    )
+
+    return await send_email_to_user(seller.email, subject, html_body)
