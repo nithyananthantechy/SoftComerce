@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import Base, engine
 from app.routes import admin, auth, client_auth, requests, marketplace
-from app.seed_rate_card import seed_rate_card
+from app.seed_rate_card import seed_rate_card, seed_default_services
 from app.database import SessionLocal
 
 
@@ -17,6 +17,7 @@ async def lifespan(app: FastAPI):
         db = SessionLocal()
         try:
             seed_rate_card(db)
+            seed_default_services(db)
         finally:
             db.close()
     except Exception as e:

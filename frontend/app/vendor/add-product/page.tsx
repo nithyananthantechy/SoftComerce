@@ -321,34 +321,39 @@ export default function AddProductPage() {
 
           {/* Billing Section */}
           {(() => {
-            const usesINR = currency === "INR";
-            const currencySymbol = usesINR ? "₹" : "$";
-            
             const listingFeeSvc = dbServices.find(s => s.service_key === "listing_fee");
-            let listingFee = 99;
-            let listingFeeModel = "one_time";
+            let listingFee = 499;
+            let listingFeeModel = "per_month";
             let listingFeeName = "Marketplace Listing Fee";
-            let listingFeeSymbol = "$";
+            let listingFeeCurrency = "INR";
+            let listingFeeSymbol = "₹";
             
             if (listingFeeSvc) {
               listingFeeName = listingFeeSvc.service_name;
               listingFeeModel = listingFeeSvc.pricing_model;
-              if (usesINR && listingFeeSvc.currency === "USD") {
-                listingFee = Number(listingFeeSvc.price) * 83.5;
-                listingFeeSymbol = "₹";
-              } else if (!usesINR && listingFeeSvc.currency === "INR") {
-                listingFee = Number(listingFeeSvc.price) / 83.5;
-                listingFeeSymbol = "$";
-              } else {
-                listingFee = Number(listingFeeSvc.price);
-                listingFeeSymbol = listingFeeSvc.currency === "INR" ? "₹" : "$";
-              }
+              listingFee = Number(listingFeeSvc.price);
+              listingFeeCurrency = listingFeeSvc.currency || "INR";
+              listingFeeSymbol = listingFeeCurrency === "INR" ? "₹" : "$";
             } else {
-              listingFee = usesINR ? 8200 : 99;
-              listingFeeSymbol = currencySymbol;
+              listingFee = 499;
+              listingFeeModel = "per_month";
+              listingFeeCurrency = "INR";
+              listingFeeSymbol = "₹";
             }
 
-            const totalAmount = listingFee + dbServices.reduce((sum, s) => sum + (s.service_key !== "listing_fee" && selectedServices[s.service_key] ? Number(s.price) : 0), 0);
+            const invoiceCurrency = listingFeeCurrency;
+            const invoiceSymbol = listingFeeSymbol;
+
+            const totalAmount = listingFee + dbServices.reduce((sum, s) => {
+              if (s.service_key === "listing_fee" || !selectedServices[s.service_key]) return sum;
+              let priceVal = Number(s.price);
+              if (invoiceCurrency === "INR" && s.currency === "USD") {
+                priceVal = priceVal * 83.5;
+              } else if (invoiceCurrency === "USD" && s.currency === "INR") {
+                priceVal = priceVal / 83.5;
+              }
+              return sum + priceVal;
+            }, 0);
 
             return (
               <div className="glass p-8 rounded-3xl relative overflow-hidden">
@@ -359,16 +364,23 @@ export default function AddProductPage() {
                 <div className="mb-6 bg-dark-900/50 rounded-xl p-5 border border-white/5 space-y-3">
                   <div className="flex justify-between items-center pb-2 border-b border-white/5">
                     <span className="text-slate-300 text-sm">{listingFeeName} ({listingFeeModel === "one_time" ? "One-time" : "Monthly"})</span>
-                    <span className="text-white font-mono font-bold">{listingFeeSymbol}{listingFee.toFixed(2)}{getPricingSuffix(listingFeeModel)}</span>
+                    <span className="text-white font-mono font-bold">{invoiceSymbol}{listingFee.toFixed(2)}{getPricingSuffix(listingFeeModel)}</span>
                   </div>
 
                   {dbServices.filter((s) => s.service_key !== "listing_fee").map((service) => {
                     if (!selectedServices[service.service_key]) return null;
+                    let displayPrice = Number(service.price);
+                    if (invoiceCurrency === "INR" && service.currency === "USD") {
+                      displayPrice = displayPrice * 83.5;
+                    } else if (invoiceCurrency === "USD" && service.currency === "INR") {
+                      displayPrice = displayPrice / 83.5;
+                    }
+
                     return (
                       <div key={service.service_key} className="flex justify-between items-center text-sm">
                         <span className="text-slate-400">{service.service_name}</span>
                         <span className="text-slate-300 font-mono">
-                          +{service.currency === "INR" ? "₹" : "$"}{Number(service.price).toFixed(2)}{getPricingSuffix(service.pricing_model)}
+                          +{invoiceSymbol}{displayPrice.toFixed(2)}{getPricingSuffix(service.pricing_model)}
                         </span>
                       </div>
                     );
@@ -377,16 +389,21 @@ export default function AddProductPage() {
                   <div className="flex justify-between items-center pt-2 border-t border-white/10 font-bold text-base">
                     <span className="text-white">Total Amount Due</span>
                     <span className="text-orange-400 font-mono">
-                      {currencySymbol}{totalAmount.toFixed(2)}
+                      {invoiceSymbol}{totalAmount.toFixed(2)}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 pt-2">Includes verification, indexing, and selected infrastructure/support services.</p>
+                  <p className="text-xs text-slate-500 pt-2">
+                    Includes verification, indexing, and selected services. 
+                    {listingFeeModel === "per_month" 
+                      ? " Note: The Marketplace Listing Fee is billed as a recurring monthly subscription." 
+                      : " Note: The Marketplace Listing Fee is billed as a one-time payment."}
+                  </p>
                 </div>
 
                 <label className="flex cursor-pointer items-start gap-3 text-sm text-slate-300">
                   <input type="checkbox" required checked={agreeFee} onChange={(e) => setAgreeFee(e.target.checked)} className="h-5 w-5 rounded border-brand-500/50 bg-transparent text-brand-500 focus:ring-brand-500/50 mt-0.5" />
                   <span>
-                    I agree to pay the total amount of {currencySymbol}{totalAmount.toFixed(2)} for listing and services. I understand an invoice will be sent to my email.
+                    I agree to pay the total amount of {invoiceSymbol}{totalAmount.toFixed(2)} for listing and services. I understand an invoice will be sent to my email.
                   </span>
                 </label>
 

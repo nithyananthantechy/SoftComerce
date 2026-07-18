@@ -110,3 +110,22 @@ def seed_rate_card(db) -> int:
         )
     db.commit()
     return len(RATE_CARD_DATA)
+
+
+def seed_default_services(db):
+    from app.models import ServicePricing
+    # Check if 'listing_fee' is seeded
+    existing = db.query(ServicePricing).filter(ServicePricing.service_key == "listing_fee").first()
+    if not existing:
+        db.add(
+            ServicePricing(
+                service_key="listing_fee",
+                service_name="Marketplace Listing Fee",
+                price=499.00,
+                currency="INR",
+                pricing_model="per_month",
+                description="Standard monthly platform subscription fee for reviewing, verifying, and hosting product listings."
+            )
+        )
+        db.commit()
+
