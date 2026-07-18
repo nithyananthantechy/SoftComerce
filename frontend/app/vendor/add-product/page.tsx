@@ -278,7 +278,7 @@ export default function AddProductPage() {
             </h2>
             
             <div className="space-y-4">
-              {dbServices.map((service) => {
+              {dbServices.filter((s) => s.service_key !== "listing_fee").map((service) => {
                 const isChecked = !!selectedServices[service.service_key];
                 return (
                   <div key={service.service_key} className={`rounded-xl border p-5 transition-colors ${
@@ -313,7 +313,7 @@ export default function AddProductPage() {
                   </div>
                 );
               })}
-              {dbServices.length === 0 && (
+              {dbServices.filter((s) => s.service_key !== "listing_fee").length === 0 && (
                 <p className="text-slate-500 text-sm italic">Loading support and infrastructure options...</p>
               )}
             </div>
@@ -323,8 +323,32 @@ export default function AddProductPage() {
           {(() => {
             const usesINR = currency === "INR";
             const currencySymbol = usesINR ? "₹" : "$";
-            const listingFee = usesINR ? 8200 : 99; // $99 approx ₹8200
-            const totalAmount = listingFee + dbServices.reduce((sum, s) => sum + (selectedServices[s.service_key] ? Number(s.price) : 0), 0);
+            
+            const listingFeeSvc = dbServices.find(s => s.service_key === "listing_fee");
+            let listingFee = 99;
+            let listingFeeModel = "one_time";
+            let listingFeeName = "Marketplace Listing Fee";
+            let listingFeeSymbol = "$";
+            
+            if (listingFeeSvc) {
+              listingFeeName = listingFeeSvc.service_name;
+              listingFeeModel = listingFeeSvc.pricing_model;
+              if (usesINR && listingFeeSvc.currency === "USD") {
+                listingFee = Number(listingFeeSvc.price) * 83.5;
+                listingFeeSymbol = "₹";
+              } else if (!usesINR && listingFeeSvc.currency === "INR") {
+                listingFee = Number(listingFeeSvc.price) / 83.5;
+                listingFeeSymbol = "$";
+              } else {
+                listingFee = Number(listingFeeSvc.price);
+                listingFeeSymbol = listingFeeSvc.currency === "INR" ? "₹" : "$";
+              }
+            } else {
+              listingFee = usesINR ? 8200 : 99;
+              listingFeeSymbol = currencySymbol;
+            }
+
+            const totalAmount = listingFee + dbServices.reduce((sum, s) => sum + (s.service_key !== "listing_fee" && selectedServices[s.service_key] ? Number(s.price) : 0), 0);
 
             return (
               <div className="glass p-8 rounded-3xl relative overflow-hidden">
@@ -334,11 +358,11 @@ export default function AddProductPage() {
                 
                 <div className="mb-6 bg-dark-900/50 rounded-xl p-5 border border-white/5 space-y-3">
                   <div className="flex justify-between items-center pb-2 border-b border-white/5">
-                    <span className="text-slate-300 text-sm">Marketplace Listing Fee (One-time)</span>
-                    <span className="text-white font-mono font-bold">{currencySymbol}{listingFee.toFixed(2)}</span>
+                    <span className="text-slate-300 text-sm">{listingFeeName} ({listingFeeModel === "one_time" ? "One-time" : "Monthly"})</span>
+                    <span className="text-white font-mono font-bold">{listingFeeSymbol}{listingFee.toFixed(2)}{getPricingSuffix(listingFeeModel)}</span>
                   </div>
 
-                  {dbServices.map((service) => {
+                  {dbServices.filter((s) => s.service_key !== "listing_fee").map((service) => {
                     if (!selectedServices[service.service_key]) return null;
                     return (
                       <div key={service.service_key} className="flex justify-between items-center text-sm">
