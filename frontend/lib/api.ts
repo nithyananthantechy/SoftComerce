@@ -266,6 +266,13 @@ export async function deleteAdminMarketplaceService(id: number): Promise<any> {
   });
 }
 
+export async function deleteAdminMarketplaceProduct(id: number): Promise<any> {
+  return api(`/api/admin/marketplace/products/${id}`, {
+    method: "DELETE",
+  });
+}
+
+
 // ── Buyer Purchase & Demo API ──
 
 export async function requestMarketplaceDemo(productId: number): Promise<any> {

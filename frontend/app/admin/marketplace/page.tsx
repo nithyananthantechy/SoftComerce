@@ -12,6 +12,7 @@ import {
   createAdminMarketplaceService,
   updateAdminMarketplaceService,
   deleteAdminMarketplaceService,
+  deleteAdminMarketplaceProduct,
   adminLogout 
 } from "@/lib/api";
 import Logo from "@/components/Logo";
@@ -87,6 +88,16 @@ export default function AdminMarketplacePage() {
       alert("Payment reminder email sent to vendor!");
     } catch (err: any) {
       setError(err.message || "Failed to send reminder");
+    }
+  }
+
+  async function handleDeleteProduct(id: number, name: string) {
+    if (!confirm(`Are you sure you want to permanently delete "${name}" from the marketplace? This cannot be undone.`)) return;
+    try {
+      await deleteAdminMarketplaceProduct(id);
+      await loadData();
+    } catch (err: any) {
+      setError(err.message || "Failed to delete product");
     }
   }
 
@@ -334,6 +345,10 @@ export default function AdminMarketplacePage() {
                                 {p.status !== "live" && p.payment_status === "paid" && (
                                   <button onClick={() => handleStatus(p.id, "live")} className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20 transition">Approve</button>
                                 )}
+                                {p.status === "live" && (
+                                  <button onClick={() => handleStatus(p.id, "rejected")} className="rounded-lg border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-xs font-medium text-orange-400 hover:bg-orange-500/20 transition">Unpublish</button>
+                                )}
+                                <button onClick={() => handleDeleteProduct(p.id, p.name)} className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-1 text-xs font-medium text-red-400 hover:bg-red-500/20 transition">🗑 Delete</button>
                               </div>
                             </td>
                           </tr>

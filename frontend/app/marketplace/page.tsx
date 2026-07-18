@@ -7,38 +7,6 @@ import Logo from "@/components/Logo";
 import { useClientAuth } from "@/context/ClientAuthContext";
 import { getPublicProducts, requestMarketplaceDemo } from "@/lib/api";
 
-const MOCK_MARKETPLACE_PRODUCTS = [
-  {
-    id: "mkt-1",
-    vendor: "DataFlow Systems",
-    name: "FlowAnalytics Pro",
-    tagline: "Real-time user behavior analytics platform",
-    price: "$49/mo",
-    icon: "📊",
-    features: ["Real-time Tracking", "Custom Dashboards", "Export to CSV"],
-    demo_video_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-  },
-  {
-    id: "mkt-2",
-    vendor: "CreativeApps Inc",
-    name: "DesignUI Toolkit",
-    tagline: "Premium UI components for Next.js and Tailwind",
-    price: "$199 one-time",
-    icon: "🎨",
-    features: ["500+ Components", "Figma Files", "Lifetime Updates"],
-    demo_video_url: "https://www.w3schools.com/html/mov_bbb.mp4"
-  },
-  {
-    id: "mkt-3",
-    vendor: "SecureNet Ltd",
-    name: "AuthGuard Enterprise",
-    tagline: "Drop-in authentication and role management",
-    price: "$99/mo",
-    icon: "🔒",
-    features: ["OAuth2", "MFA Support", "SSO Integration"],
-    demo_video_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-  }
-];
 
 export default function MarketplacePage() {
   const { client, logout } = useClientAuth();
@@ -138,7 +106,7 @@ export default function MarketplacePage() {
     };
   });
 
-  const displayProducts = [...formattedRealProducts, ...MOCK_MARKETPLACE_PRODUCTS];
+  const displayProducts = formattedRealProducts;
 
   return (
     <div className="min-h-screen hero-gradient pb-20">

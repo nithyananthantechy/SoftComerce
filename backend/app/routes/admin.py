@@ -263,3 +263,15 @@ def admin_delete_service(service_id: int, db=Depends(get_db)):
     db.delete(service)
     db.commit()
     return {"ok": True, "message": "Service deleted"}
+
+
+@router.delete("/marketplace/products/{product_id}")
+def admin_delete_product(product_id: int, db=Depends(get_db)):
+    product = db.query(VendorProduct).filter(VendorProduct.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    db.delete(product)
+    db.commit()
+    return {"ok": True, "message": "Product deleted"}
+
