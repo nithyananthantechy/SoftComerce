@@ -299,7 +299,7 @@ export default function AddProductPage() {
                           <strong className="text-white block text-base mb-1">{service.service_name}</strong>
                           <span className="text-blue-400 font-mono font-bold">
                             {service.price > 0 
-                              ? `+$${Number(service.price).toFixed(2)}${getPricingSuffix(service.pricing_model)}` 
+                              ? `+${service.currency === "INR" ? "₹" : "$"}${Number(service.price).toFixed(2)}${getPricingSuffix(service.pricing_model)}` 
                               : "Free"}
                           </span>
                         </div>
@@ -337,7 +337,7 @@ export default function AddProductPage() {
                   <div key={service.service_key} className="flex justify-between items-center text-sm">
                     <span className="text-slate-400">{service.service_name}</span>
                     <span className="text-slate-300 font-mono">
-                      +${Number(service.price).toFixed(2)}{getPricingSuffix(service.pricing_model)}
+                      +{service.currency === "INR" ? "₹" : "$"}{Number(service.price).toFixed(2)}{getPricingSuffix(service.pricing_model)}
                     </span>
                   </div>
                 );

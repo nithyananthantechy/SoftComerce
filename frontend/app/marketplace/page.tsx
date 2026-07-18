@@ -118,7 +118,7 @@ export default function MarketplacePage() {
   const formattedRealProducts = products.map((p) => {
     let formattedPrice = "Custom Pricing";
     if (p.price) {
-      const sym = p.currency === "USD" ? "$" : p.currency + " ";
+      const sym = p.currency === "USD" ? "$" : p.currency === "INR" ? "₹" : p.currency + " ";
       const model = p.pricing_model === "per_month" ? "/mo" :
                     p.pricing_model === "per_year" ? "/yr" :
                     p.pricing_model === "one_time" ? " one-time" :

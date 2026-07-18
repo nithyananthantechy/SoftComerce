@@ -86,7 +86,7 @@ export default function PurchasePage({ params }: { params: Promise<{ id: string 
             let numericPrice = 0;
             if (matched.price) {
               numericPrice = Number(matched.price);
-              const sym = matched.currency === "USD" ? "$" : matched.currency + " ";
+              const sym = matched.currency === "USD" ? "$" : matched.currency === "INR" ? "₹" : matched.currency + " ";
               const model = matched.pricing_model === "per_month" ? "/mo" :
                             matched.pricing_model === "per_year" ? "/yr" :
                             matched.pricing_model === "one_time" ? " one-time" :

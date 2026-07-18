@@ -31,6 +31,7 @@ export default function AdminMarketplacePage() {
   const [servicePrice, setServicePrice] = useState(0);
   const [servicePricingModel, setServicePricingModel] = useState("one_time");
   const [serviceDescription, setServiceDescription] = useState("");
+  const [serviceCurrency, setServiceCurrency] = useState("USD");
   const [isAddMode, setIsAddMode] = useState(false);
 
   async function loadData() {
@@ -108,6 +109,7 @@ export default function AdminMarketplacePage() {
     setServicePrice(0);
     setServicePricingModel("one_time");
     setServiceDescription("");
+    setServiceCurrency("USD");
     setIsAddMode(true);
   };
 
@@ -119,6 +121,7 @@ export default function AdminMarketplacePage() {
     setServicePrice(Number(svc.price));
     setServicePricingModel(svc.pricing_model || "one_time");
     setServiceDescription(svc.description || "");
+    setServiceCurrency(svc.currency || "USD");
   };
 
   const handleSaveService = async (e: React.FormEvent) => {
@@ -131,7 +134,7 @@ export default function AdminMarketplacePage() {
           price: servicePrice,
           pricing_model: servicePricingModel,
           description: serviceDescription,
-          currency: "USD"
+          currency: serviceCurrency
         });
       } else if (editingServiceId) {
         await updateAdminMarketplaceService(editingServiceId, {
@@ -140,7 +143,7 @@ export default function AdminMarketplacePage() {
           price: servicePrice,
           pricing_model: servicePricingModel,
           description: serviceDescription,
-          currency: "USD"
+          currency: serviceCurrency
         });
       }
       setIsAddMode(false);
@@ -360,7 +363,7 @@ export default function AdminMarketplacePage() {
                         <div className="flex justify-between items-start mb-2">
                           <p className="text-base font-bold text-white">{svc.service_name}</p>
                           <span className="font-mono text-sm font-bold text-orange-400">
-                            ${Number(svc.price).toFixed(2)}{getPricingSuffix(svc.pricing_model)}
+                            {svc.currency === "INR" ? "₹" : svc.currency === "USD" ? "$" : (svc.currency || "$")}{Number(svc.price).toFixed(2)}{getPricingSuffix(svc.pricing_model)}
                           </span>
                         </div>
                         <p className="text-xs text-slate-500 font-mono mb-2">Key: {svc.service_key}</p>
@@ -423,9 +426,21 @@ export default function AdminMarketplacePage() {
                         placeholder="e.g. Dedicated Support"
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-3">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1">PRICE (USD)</label>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">CURRENCY</label>
+                        <select 
+                          value={serviceCurrency} 
+                          onChange={(e) => setServiceCurrency(e.target.value)} 
+                          className="input-dark w-full py-2.5 text-sm" 
+                          style={{ background: "#1a1f2e" }}
+                        >
+                          <option value="USD">USD ($)</option>
+                          <option value="INR">INR (₹)</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">PRICE</label>
                         <input 
                           type="number" 
                           required 
@@ -435,7 +450,7 @@ export default function AdminMarketplacePage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1">PRICING MODEL</label>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">MODEL</label>
                         <select 
                           value={servicePricingModel} 
                           onChange={(e) => setServicePricingModel(e.target.value)} 
@@ -446,10 +461,10 @@ export default function AdminMarketplacePage() {
                           <option value="per_month">Per Month</option>
                           <option value="per_year">Per Year</option>
                           <option value="per_user">Per User</option>
-                          <option value="custom">Custom Pricing</option>
+                          <option value="custom">Custom</option>
                         </select>
                       </div>
-                    </div>
+                    </div>                  </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-400 mb-1">DESCRIPTION (Shown to sellers in checkout checklist)</label>
                       <textarea 
