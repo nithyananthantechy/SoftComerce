@@ -75,12 +75,17 @@ export default function AdminMarketplacePage() {
 
   async function handleStatus(id: number, status: string) {
     try {
+      // When approving to live, also ensure payment is marked paid
+      if (status === "live") {
+        await updateMarketplacePayment(id, "paid");
+      }
       await updateMarketplaceStatus(id, status);
       await loadData();
     } catch (err: any) {
       setError(err.message || "Failed to update status");
     }
   }
+
 
   async function handleNotify(id: number) {
     try {
@@ -342,8 +347,8 @@ export default function AdminMarketplacePage() {
                                     <button onClick={() => handlePayment(p.id, "paid")} className="rounded-lg border border-green-500/20 bg-green-500/10 px-3 py-1 text-xs font-medium text-green-400 hover:bg-green-500/20 transition">Mark Paid</button>
                                   </>
                                 )}
-                                {p.status !== "live" && p.payment_status === "paid" && (
-                                  <button onClick={() => handleStatus(p.id, "live")} className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20 transition">Approve</button>
+                                {p.status !== "live" && (
+                                  <button onClick={() => handleStatus(p.id, "live")} className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20 transition">✅ Approve</button>
                                 )}
                                 {p.status === "live" && (
                                   <button onClick={() => handleStatus(p.id, "rejected")} className="rounded-lg border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-xs font-medium text-orange-400 hover:bg-orange-500/20 transition">Unpublish</button>
