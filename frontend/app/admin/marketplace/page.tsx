@@ -124,6 +124,15 @@ export default function AdminMarketplacePage() {
     setServiceCurrency(svc.currency || "USD");
   };
 
+  const handleCurrencyChange = (newCurrency: string) => {
+    if (serviceCurrency === "USD" && newCurrency === "INR") {
+      setServicePrice(Math.round(servicePrice * 83.5));
+    } else if (serviceCurrency === "INR" && newCurrency === "USD") {
+      setServicePrice(Math.round(servicePrice / 83.5));
+    }
+    setServiceCurrency(newCurrency);
+  };
+
   const handleSaveService = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -431,7 +440,7 @@ export default function AdminMarketplacePage() {
                         <label className="block text-xs font-semibold text-slate-400 mb-1">CURRENCY</label>
                         <select 
                           value={serviceCurrency} 
-                          onChange={(e) => setServiceCurrency(e.target.value)} 
+                          onChange={(e) => handleCurrencyChange(e.target.value)} 
                           className="input-dark w-full py-2.5 text-sm" 
                           style={{ background: "#1a1f2e" }}
                         >

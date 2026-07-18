@@ -320,44 +320,51 @@ export default function AddProductPage() {
           </div>
 
           {/* Billing Section */}
-          <div className="glass p-8 rounded-3xl relative overflow-hidden">
-            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-              <span className="text-brand-400">03.</span> Marketplace Billing
-            </h2>
-            
-            <div className="mb-6 bg-dark-900/50 rounded-xl p-5 border border-white/5 space-y-3">
-              <div className="flex justify-between items-center pb-2 border-b border-white/5">
-                <span className="text-slate-300 text-sm">Marketplace Listing Fee (One-time)</span>
-                <span className="text-white font-mono font-bold">$99.00</span>
-              </div>
+          {(() => {
+            const usesINR = currency === "INR";
+            const currencySymbol = usesINR ? "₹" : "$";
+            const listingFee = usesINR ? 8200 : 99; // $99 approx ₹8200
+            const totalAmount = listingFee + dbServices.reduce((sum, s) => sum + (selectedServices[s.service_key] ? Number(s.price) : 0), 0);
 
-              {dbServices.map((service) => {
-                if (!selectedServices[service.service_key]) return null;
-                return (
-                  <div key={service.service_key} className="flex justify-between items-center text-sm">
-                    <span className="text-slate-400">{service.service_name}</span>
-                    <span className="text-slate-300 font-mono">
-                      +{service.currency === "INR" ? "₹" : "$"}{Number(service.price).toFixed(2)}{getPricingSuffix(service.pricing_model)}
+            return (
+              <div className="glass p-8 rounded-3xl relative overflow-hidden">
+                <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                  <span className="text-brand-400">03.</span> Marketplace Billing
+                </h2>
+                
+                <div className="mb-6 bg-dark-900/50 rounded-xl p-5 border border-white/5 space-y-3">
+                  <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                    <span className="text-slate-300 text-sm">Marketplace Listing Fee (One-time)</span>
+                    <span className="text-white font-mono font-bold">{currencySymbol}{listingFee.toFixed(2)}</span>
+                  </div>
+
+                  {dbServices.map((service) => {
+                    if (!selectedServices[service.service_key]) return null;
+                    return (
+                      <div key={service.service_key} className="flex justify-between items-center text-sm">
+                        <span className="text-slate-400">{service.service_name}</span>
+                        <span className="text-slate-300 font-mono">
+                          +{service.currency === "INR" ? "₹" : "$"}{Number(service.price).toFixed(2)}{getPricingSuffix(service.pricing_model)}
+                        </span>
+                      </div>
+                    );
+                  })}
+
+                  <div className="flex justify-between items-center pt-2 border-t border-white/10 font-bold text-base">
+                    <span className="text-white">Total Amount Due</span>
+                    <span className="text-orange-400 font-mono">
+                      {currencySymbol}{totalAmount.toFixed(2)}
                     </span>
                   </div>
-                );
-              })}
+                  <p className="text-xs text-slate-500 pt-2">Includes verification, indexing, and selected infrastructure/support services.</p>
+                </div>
 
-              <div className="flex justify-between items-center pt-2 border-t border-white/10 font-bold text-base">
-                <span className="text-white">Total Amount Due</span>
-                <span className="text-orange-400 font-mono">
-                  ${(99 + dbServices.reduce((sum, s) => sum + (selectedServices[s.service_key] ? Number(s.price) : 0), 0)).toFixed(2)}
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 pt-2">Includes verification, indexing, and selected infrastructure/support services.</p>
-            </div>
-
-            <label className="flex cursor-pointer items-start gap-3 text-sm text-slate-300">
-              <input type="checkbox" required checked={agreeFee} onChange={(e) => setAgreeFee(e.target.checked)} className="h-5 w-5 rounded border-brand-500/50 bg-transparent text-brand-500 focus:ring-brand-500/50 mt-0.5" />
-              <span>
-                I agree to pay the total amount of ${(99 + dbServices.reduce((sum, s) => sum + (selectedServices[s.service_key] ? Number(s.price) : 0), 0)).toFixed(2)} for listing and services. I understand an invoice will be sent to my email.
-              </span>
-            </label>
+                <label className="flex cursor-pointer items-start gap-3 text-sm text-slate-300">
+                  <input type="checkbox" required checked={agreeFee} onChange={(e) => setAgreeFee(e.target.checked)} className="h-5 w-5 rounded border-brand-500/50 bg-transparent text-brand-500 focus:ring-brand-500/50 mt-0.5" />
+                  <span>
+                    I agree to pay the total amount of {currencySymbol}{totalAmount.toFixed(2)} for listing and services. I understand an invoice will be sent to my email.
+                  </span>
+                </label>
 
             {status === "error" && (
               <div className="mt-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
@@ -365,6 +372,8 @@ export default function AddProductPage() {
               </div>
             )}
           </div>
+            );
+          })()}
 
           {/* Submit Action */}
           <div className="flex justify-end pt-4">
