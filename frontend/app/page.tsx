@@ -39,7 +39,7 @@ const categories: {
 
 
 export default function HomePage() {
-  const { client, logout } = useClientAuth();
+  const { client, logout, isLoading } = useClientAuth();
   const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
   const [previewProducts, setPreviewProducts] = useState<any[]>([]);
@@ -89,7 +89,12 @@ export default function HomePage() {
               Marketplace
             </Link>
             
-            {client ? (
+            {isLoading ? (
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-4 rounded bg-white/5 animate-pulse"></div>
+                <div className="w-20 h-8 rounded-full bg-white/5 animate-pulse"></div>
+              </div>
+            ) : client ? (
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <button 
