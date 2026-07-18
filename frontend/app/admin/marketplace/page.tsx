@@ -464,7 +464,7 @@ export default function AdminMarketplacePage() {
                           <option value="custom">Custom</option>
                         </select>
                       </div>
-                    </div>                  </div>
+                    </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-400 mb-1">DESCRIPTION (Shown to sellers in checkout checklist)</label>
                       <textarea 
