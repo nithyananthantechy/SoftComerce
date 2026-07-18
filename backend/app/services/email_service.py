@@ -242,10 +242,12 @@ def _cta_button(href: str, label: str, color: str = "#0f172a") -> str:
 # ─── Send helpers ──────────────────────────────────────────────────────────────
 
 async def send_email(subject: str, html_body: str) -> str:
-    if settings.smtp_host and settings.smtp_user:
-        return await _send_smtp(subject, html_body)
+    if settings.resend_api_key:
+        return await _send_resend(settings.admin_email, subject, html_body)
     if settings.sendgrid_api_key:
         return await _send_sendgrid(subject, html_body)
+    if settings.smtp_host and settings.smtp_user:
+        return await _send_smtp(subject, html_body)
     logger.warning("No email provider configured — email not sent: %s", subject)
     return "skipped_no_config"
 
@@ -295,11 +297,32 @@ async def _send_sendgrid(subject: str, html_body: str) -> str:
     return "sent"
 
 
+async def _send_resend(to_email: str, subject: str, html_body: str) -> str:
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {settings.resend_api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "from": settings.from_email,
+                "to": to_email,
+                "subject": subject,
+                "html": html_body,
+            },
+        )
+        resp.raise_for_status()
+    return "sent"
+
+
 async def send_email_to_user(to_email: str, subject: str, html_body: str) -> str:
-    if settings.smtp_host and settings.smtp_user:
-        return await _send_smtp_to_user(to_email, subject, html_body)
+    if settings.resend_api_key:
+        return await _send_resend(to_email, subject, html_body)
     if settings.sendgrid_api_key:
         return await _send_sendgrid_to_user(to_email, subject, html_body)
+    if settings.smtp_host and settings.smtp_user:
+        return await _send_smtp_to_user(to_email, subject, html_body)
     logger.warning("No email provider configured — email not sent to %s: %s", to_email, subject)
     return "skipped_no_config"
 

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import random
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, BackgroundTasks
 from itsdangerous import BadSignature, URLSafeTimedSerializer
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
@@ -47,7 +47,11 @@ def verify_client_session(request: Request) -> dict:
 
 
 @router.post("/register", response_model=ClientOut)
-async def register(body: ClientCreate, db: Session = Depends(get_db)):
+async def register(
+    body: ClientCreate,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
     # Check if email exists
     existing = db.query(Client).filter(Client.email == body.email).first()
     if existing:
@@ -76,10 +80,10 @@ async def register(body: ClientCreate, db: Session = Depends(get_db)):
 
     print(f"\n[DEVELOPER WARNING] REGISTER EMAIL OTP FOR {client.email}: {email_otp}\n")
 
-    try:
-        await send_otp_email(client.email, email_otp, "verify your registration email for Softkart")
-    except Exception as e:
-        print(f"\n[WARNING] Failed to send registration email: {e}. Proceeding in offline dev mode.\n")
+    # Queue the email in the background so registration is instant
+    background_tasks.add_task(
+        send_otp_email, client.email, email_otp, "verify your registration email for Softkart"
+    )
 
     return client
 
@@ -177,7 +181,11 @@ def become_seller(session: dict = Depends(verify_client_session), db: Session = 
 
 
 @router.post("/forgot-password")
-async def forgot_password(body: ForgotPasswordRequest, db: Session = Depends(get_db)):
+async def forgot_password(
+    body: ForgotPasswordRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
     client = db.query(Client).filter(Client.email == body.email).first()
     if not client:
         raise HTTPException(status_code=404, detail="Email address not found")
@@ -188,10 +196,9 @@ async def forgot_password(body: ForgotPasswordRequest, db: Session = Depends(get
     db.commit()
     print(f"\n[DEVELOPER WARNING] PASSWORD RESET OTP FOR {body.email}: {otp}\n")
 
-    try:
-        await send_otp_email(body.email, otp, "reset your Softkart password")
-    except Exception as e:
-        print(f"\n[WARNING] Failed to send email: {e}. Proceeding in offline dev mode.\n")
+    background_tasks.add_task(
+        send_otp_email, body.email, otp, "reset your Softkart password"
+    )
 
     return {"ok": True, "message": "Verification code sent to your email."}
 
@@ -239,6 +246,7 @@ def update_profile(
 @router.post("/profile/request-password-change")
 async def request_password_change(
     body: PasswordChange,
+    background_tasks: BackgroundTasks,
     session: dict = Depends(verify_client_session),
     db: Session = Depends(get_db)
 ):
@@ -256,10 +264,9 @@ async def request_password_change(
     db.commit()
     print(f"\n[DEVELOPER WARNING] PASSWORD CHANGE OTP FOR {client.email}: {otp}\n")
 
-    try:
-        await send_otp_email(client.email, otp, "verify your password change for Softkart")
-    except Exception as e:
-        print(f"\n[WARNING] Failed to send email: {e}. Proceeding in offline dev mode.\n")
+    background_tasks.add_task(
+        send_otp_email, client.email, otp, "verify your password change for Softkart"
+    )
 
     return {"ok": True, "message": "Verification OTP sent to your registered email address."}
 
@@ -295,6 +302,7 @@ def verify_password_change(
 @router.post("/profile/request-email-change")
 async def request_email_change(
     body: EmailChangeRequest,
+    background_tasks: BackgroundTasks,
     session: dict = Depends(verify_client_session),
     db: Session = Depends(get_db)
 ):
@@ -315,10 +323,9 @@ async def request_email_change(
     db.commit()
     print(f"\n[DEVELOPER WARNING] EMAIL CHANGE OTP FOR {client.email} -> {body.new_email}: {otp}\n")
 
-    try:
-        await send_otp_email(body.new_email, otp, "verify your new email address for Softkart")
-    except Exception as e:
-        print(f"\n[WARNING] Failed to send email: {e}. Proceeding in offline dev mode.\n")
+    background_tasks.add_task(
+        send_otp_email, body.new_email, otp, "verify your new email address for Softkart"
+    )
 
     return {"ok": True, "message": "Verification code sent to the new email address."}
 

@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     admin_email: str = "nithyananthan@nskgroups.website"
     from_email: str = "noreply@nskgroups.website"
     sendgrid_api_key: str = ""
+    resend_api_key: str = ""
     smtp_host: str = ""
     smtp_port: int = 587
     smtp_user: str = ""
