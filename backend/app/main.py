@@ -40,6 +40,21 @@ app.include_router(client_auth.router)
 app.include_router(marketplace.router)
 app.include_router(admin.router)
 
+from fastapi.responses import JSONResponse
+import traceback
+
+@app.exception_handler(Exception)
+def debug_exception_handler(request, exc):
+    tb = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+    print(f"Exception: {exc}\n{tb}")
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": str(exc),
+            "traceback": tb
+        }
+    )
+
 
 @app.get("/api/health")
 def health():
