@@ -1,14 +1,85 @@
+version: "3.8"
+
 services:
+  # ---------------------------------------------
+  # Nginx Proxy Manager (Reverse Proxy + SSL)
+  # ---------------------------------------------
+  nginx-proxy-manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      # These ports are bound to the host (AWS EC2)
+      - '80:80'    # Public HTTP
+      - '81:81'    # NPM Admin UI
+      - '443:443'  # Public HTTPS
+    environment:
+      # These are default admin credentials, you should change them after first login
+      DB_SQLITE_FILE: "/data/database.sqlite"
+      DISABLE_IPV6: 'true'
+    volumes:
+      - ./npm/data:/data
+      - ./npm/letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy-network
+
+  # ---------------------------------------------
+  # Softkart Database
+  # ---------------------------------------------
   db:
     image: postgres:16-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_USER: softcomerce
       POSTGRES_PASSWORD: softcomerce
       POSTGRES_DB: softcomerce
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - proxy-network
+
+  # ---------------------------------------------
+  # Softkart Backend (FastAPI)
+  # ---------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://softcomerce:softcomerce@db:5432/softcomerce
+      - SESSION_SECRET=YOUR_RANDOM_SESSION_SECRET_HERE
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=Nitechspark@2026
+      # Note: Define your API keys like GROQ_API_KEY in a .env file on the server
+    env_file:
+      - ./backend/.env.production
+    networks:
+      - proxy-network
+
+  # ---------------------------------------------
+  # Softkart Frontend (Next.js)
+  # ---------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      # NEXT_PUBLIC_API_URL should point to the public domain you set up for your backend.
+      # If you use the same domain for both (routing /api to backend), you can just use /api
+      # For NPM, we'll route `softkart.nskgroups.website` to frontend, and `api.softkart.nskgroups.website` to backend.
+      - NEXT_PUBLIC_API_URL=https://api.softkart.nskgroups.website
+    networks:
+      - proxy-network
 
 volumes:
   pgdata:
+
+networks:
+  proxy-network:
+    name: proxy-network
+    driver: bridge
